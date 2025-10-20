@@ -1,0 +1,47 @@
+/* For a better look on scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937; /* gray-800 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563; /* gray-600 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280; /* gray-500 */
+}
+
+/* ACE Editor styling */
+.editor-instance {
+    height: 100%;
+    width: 100%;
+}
+
+/* Tab styling */
+.tab-btn {
+    color: #9ca3af; /* gray-400 */
+    background-color: #374151; /* gray-700 */
+    border-right: 1px solid #1f2937; /* gray-800 */
+}
+
+.tab-btn:hover {
+    background-color: #4b5563; /* gray-600 */
+    color: #f3f4f6; /* gray-100 */
+}
+
+.tab-btn.active {
+    background-color: #1f2937; /* gray-800 */
+    color: #ffffff;
+}
+
+/* Responsive button styling */
+.responsive-btn.active {
+    background-color: #4f46e5; /* indigo-600 */
+    color: #ffffff;
+}

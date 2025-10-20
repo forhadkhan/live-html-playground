@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live HTML Playground - Online HTML Editor & Live Preview</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-900 text-gray-200 flex flex-col h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 p-2 flex flex-col sm:flex-row items-center justify-between shadow-md z-20 gap-2 sm:gap-0">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                 <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                <h1 class="text-lg sm:text-xl font-bold text-white">HTML Editor & Live Preview</h1>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button id="layout-toggle-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Toggle Layout">
+                <i data-lucide="layout-panel-top" class="w-5 h-5"></i>
+                <span class="hidden sm:inline">Layout</span>
+            </button>
+            <div class="flex items-center space-x-2">
+                <label for="tab-size" class="text-sm font-medium hidden sm:inline">Tab Size:</label>
+                <select id="tab-size" class="bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="2">2</option>
+                    <option value="4" selected>4</option>
+                </select>
+            </div>
+             <button id="format-code-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Format Code">
+                <i data-lucide="align-left" class="w-5 h-5"></i>
+                <span class="hidden sm:inline">Format</span>
+            </button>
+            <button id="run-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Force Run (Ctrl+Enter)">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                <span class="hidden sm:inline">Run</span>
+            </button>
+            <button id="download-zip-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Download Project as ZIP">
+                <i data-lucide="download" class="w-5 h-5"></i>
+                <span class="hidden sm:inline">Download</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content (Editor + Preview) -->
+    <main class="flex flex-1 overflow-hidden">
+        <!-- Editor Pane -->
+        <div id="editor-pane" class="flex flex-col bg-gray-900">
+            <!-- Editor Header -->
+            <div class="flex items-center justify-between h-10 px-2 bg-gray-800 border-b border-gray-500">
+                <!-- Tabs -->
+                <div id="editor-tabs" class="flex h-full">
+                    <button data-editor="html" class="px-2 lg:px-3 xl:px-4 tab-btn active">HTML</button>
+                    <button data-editor="css" class="px-2 lg:px-3 xl:px-4 tab-btn">CSS</button>
+                    <button data-editor="js" class="px-2 lg:px-3 xl:px-4 tab-btn">JavaScript</button>
+                </div>
+                <!-- Editor Controls -->
+                <div class="flex items-center space-x-1 xl:space-x-2">
+                    <button id="editor-theme-btn" class="control-btn" title="Toggle Theme">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                    </button>
+                    <button id="editor-zoom-out-btn" class="control-btn" title="Zoom Out">
+                        <i data-lucide="zoom-out" class="w-4 h-4"></i>
+                    </button>
+                    <button id="editor-zoom-in-btn" class="control-btn" title="Zoom In">
+                        <i data-lucide="zoom-in" class="w-4 h-4"></i>
+                    </button>
+                    <button id="editor-fullscreen-btn" class="control-btn" title="Toggle Editor Fullscreen">
+                        <i data-lucide="maximize" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Editor Instances -->
+            <div class="flex-1 relative">
+                <div id="html-editor" class="editor-instance absolute inset-0"></div>
+                <div id="css-editor" class="editor-instance absolute inset-0" style="visibility: hidden;"></div>
+                <div id="js-editor" class="editor-instance absolute inset-0" style="visibility: hidden;"></div>
+            </div>
+        </div>
+
+        <!-- Resizer -->
+        <div id="resizer" class="bg-gray-700 hover:bg-blue-500 transition-colors duration-200"></div>
+
+        <!-- Preview Pane -->
+        <div id="preview-pane" class="flex flex-col bg-white">
+            <!-- Preview Header -->
+            <div class="flex items-center justify-between h-10 px-2 bg-gray-800 border-b border-gray-500">
+                 <!-- Responsive Controls -->
+                <div id="responsive-controls" class="flex items-center space-x-1 flex-wrap">
+                    <button data-size="100%" class="responsive-btn p-1 rounded" title="Desktop"><i data-lucide="monitor" class="w-4 h-4"></i></button>
+                    <button data-size="1280px" class="responsive-btn p-1 rounded" title="Large Desktop (1280px)"><i data-lucide="laptop-2" class="w-4 h-4"></i></button>
+                    <button data-size="1024px" class="responsive-btn p-1 rounded" title="Laptop (1024px)"><i data-lucide="laptop" class="w-4 h-4"></i></button>
+                    <button data-size="768px" class="responsive-btn p-1 rounded" title="Tablet (768px)"><i data-lucide="tablet" class="w-4 h-4"></i></button>
+                    <button data-size="425px" class="responsive-btn p-1 rounded" title="Mobile L (425px)"><i data-lucide="smartphone" class="w-4 h-4"></i></button>
+                    <button data-size="375px" class="responsive-btn p-1 rounded" title="Mobile M (375px)"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i></button>
+                    <button data-size="320px" class="responsive-btn p-1 rounded" title="Mobile S (320px)"><i data-lucide="smartphone" class="w-3 h-3"></i></button>
+                </div>
+                <!-- Preview Controls -->
+                <div class="flex items-center">
+                     <button id="preview-fullscreen-btn" class="control-btn" title="Toggle Preview Fullscreen">
+                        <i data-lucide="maximize" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Iframe for Preview -->
+            <div class="flex-1 bg-gray-100 p-1 bg-gray-800 overflow-auto">
+                 <iframe id="preview-iframe" class="w-full h-full bg-white border-0 shadow-lg mx-auto transition-all duration-300" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="app-footer" class="bg-gray-800 border-t border-gray-700 p-2 text-center text-xs text-gray-400 z-20">
+        <!-- Content injected by JS -->
+    </footer>
+
+    <!-- ACE Editor CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-tomorrow_night_eighties.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-chrome.js"></script>
+    <!-- Prettier CDN (for code formatting) -->
+    <script src="https://unpkg.com/prettier@2.8.4/standalone.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-html.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-babel.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-postcss.js"></script>
+    <!-- JSZip CDN (for downloading) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- App Logic -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/editor.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>
+

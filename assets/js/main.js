@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const editorZoomOutBtn = document.getElementById('editor-zoom-out-btn');
     const editorThemeBtn = document.getElementById('editor-theme-btn');
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+    const consoleOutput = document.getElementById('console-output');
+    const clearConsoleBtn = document.getElementById('clear-console-btn');
 
     // --- 3. STATE MANAGEMENT ---
 
@@ -171,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Handles tab switching in the editor pane. It updates the active styles
-     * and shows/hides the corresponding ACE editor instance.
+     * and shows/hides the corresponding editor instance or console panel.
      * @param {MouseEvent} e - The click event object.
      */
     function handleTabClick(e) {
@@ -182,24 +184,62 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         target.classList.add('active');
 
-        // Show the corresponding editor
-        const editorId = `${target.dataset.editor}-editor`;
-        editorInstances.forEach(editor => {
-            editor.style.visibility = (editor.id === editorId) ? 'visible' : 'hidden';
+        const panelType = target.dataset.editor;
+        
+        const panelToShowId = (panelType === 'console') 
+            ? 'console-panel'
+            : `${panelType}-editor`;
+
+        // The querySelectorAll includes the console panel now
+        document.querySelectorAll('.editor-instance').forEach(instance => {
+            instance.style.visibility = (instance.id === panelToShowId) ? 'visible' : 'hidden';
         });
 
-        // Focus the now-active editor for a better user experience.
-        editors[`${target.dataset.editor}Editor`].focus();
+        // Focus only if it's an actual editor
+        if (panelType !== 'console') {
+            editors[`${panelType}Editor`].focus();
+        }
     }
 
     /**
-     * Gathers code from all editors and constructs a complete HTML document.
-     * This document is then loaded into the preview iframe using `srcdoc`.
+     * Gathers code, injects a console interceptor, and updates the preview iframe.
      */
     function updatePreview() {
         const htmlCode = editors.htmlEditor.getValue();
         const cssCode = editors.cssEditor.getValue();
         const jsCode = editors.jsEditor.getValue();
+
+        // This script will run inside the iframe, capture console calls, and send them to the parent window.
+        const consoleInterceptor = `
+            <script>
+                const originalConsole = { ...window.console };
+                const postLog = (level, args) => {
+                    try {
+                        const processedArgs = args.map(arg => {
+                             if (arg instanceof Error) {
+                                return { __error: true, message: arg.message, stack: arg.stack };
+                            }
+                            // A simple stringify works for most cases, but not circular refs. It's a safe starting point.
+                            try { return JSON.parse(JSON.stringify(arg)); } catch (e) { return String(arg); }
+                        });
+                        window.parent.postMessage({ source: 'iframe-console', level: level, message: processedArgs }, '*');
+                    } catch (e) {
+                        originalConsole.error('Error posting log to parent:', e);
+                    }
+                };
+
+                window.console = {
+                    ...originalConsole,
+                    log: (...args) => { postLog('log', args); originalConsole.log(...args); },
+                    error: (...args) => { postLog('error', args); originalConsole.error(...args); },
+                    warn: (...args) => { postLog('warn', args); originalConsole.warn(...args); },
+                    info: (...args) => { postLog('info', args); originalConsole.info(...args); },
+                };
+                
+                window.addEventListener('error', e => postLog('error', [e.message]));
+                window.addEventListener('unhandledrejection', e => postLog('error', ['Unhandled promise rejection:', e.reason]));
+            </script>
+        `;
 
         const combinedHtml = `
             <!DOCTYPE html>
@@ -207,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                ${consoleInterceptor}
                 <style>${cssCode}</style>
             </head>
             <body>
@@ -215,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     try {
                         ${jsCode}
                     } catch (e) {
-                        console.error("Error in user script:", e);
+                        console.error(e);
                     }
                 </script>
             </body>
@@ -226,17 +267,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Renders a single log message to the console output panel.
+     * @param {string} level - The console level (e.g., 'log', 'error').
+     * @param {Array} args - An array of arguments passed to the console method.
+     */
+    function renderConsoleMessage(level, args) {
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${level}`;
+
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'log-message';
+
+        const formattedArgs = args.map(arg => {
+            if (typeof arg === 'object' && arg !== null) {
+                if (arg.__error) return `${arg.message}\n${arg.stack || ''}`;
+                return JSON.stringify(arg, null, 2);
+            }
+            return String(arg);
+        }).join(' ');
+        
+        const pre = document.createElement('pre');
+        pre.textContent = formattedArgs;
+        messageContainer.appendChild(pre);
+        
+        logEntry.appendChild(messageContainer);
+        consoleOutput.appendChild(logEntry);
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+
+    /**
      * Formats the code in the currently active editor using the Prettier library.
      */
     function formatCode() {
         const activeTab = document.querySelector('.tab-btn.active');
-        if (!activeTab) return;
+        if (!activeTab || activeTab.dataset.editor === 'console') return;
 
         const editorKey = `${activeTab.dataset.editor}Editor`;
         const activeEditor = editors[editorKey];
         const mode = activeTab.dataset.editor;
 
-        // Map editor mode to the correct Prettier parser.
         const parsers = { html: 'html', css: 'css', js: 'babel' };
 
         try {
@@ -245,10 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 plugins: prettierPlugins,
                 tabWidth: parseInt(tabSizeSelector.value, 10),
             });
-            activeEditor.setValue(formattedCode, 1); // 1 moves cursor to end
+            activeEditor.setValue(formattedCode, 1);
         } catch (error) {
             console.error("Formatting error:", error);
-            // In a production app, you might want to show a toast notification here.
         }
     }
     
@@ -268,12 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function downloadZip() {
         const zip = new JSZip();
-
         const htmlCode = editors.htmlEditor.getValue();
         const cssCode = editors.cssEditor.getValue();
         const jsCode = editors.jsEditor.getValue();
 
-        // Create a root index.html that links to the separate CSS and JS files.
         const linkedHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -304,28 +371,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Toggles fullscreen mode for a specific pane ('editor' or 'preview').
-     * It handles showing/hiding panes, resizing them, and updating icons.
      * @param {'editor' | 'preview'} pane - The pane to toggle fullscreen.
      */
     function toggleFullscreen(pane) {
         const isExiting = currentFullscreen === pane;
 
-        // Always reset to the default view first.
         header.style.display = 'flex';
         editorPane.style.display = 'flex';
         previewPane.style.display = 'flex';
         resizer.style.display = 'flex';
         currentFullscreen = null;
         
-        // Restore the correct layout (respecting manual override)
         updateLayout();
         
-        // Reset button icons to 'maximize'.
         editorFullscreenBtn.innerHTML = '<i data-lucide="maximize" class="w-4 h-4"></i>';
         previewFullscreenBtn.innerHTML = '<i data-lucide="maximize" class="w-4 h-4"></i>';
 
         if (!isExiting) {
-            // Enter the requested fullscreen mode.
             if (pane === 'editor') {
                 previewPane.style.display = 'none';
                 resizer.style.display = 'none';
@@ -345,7 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lucide.createIcons();
-        // Give the DOM a moment to reflow before telling the editors to resize.
         setTimeout(() => Object.values(editors).forEach(e => e.resize()), 50);
     }
 
@@ -371,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isResizing = true; 
             const isVertical = mainContent.classList.contains('flex-col');
             document.body.style.cursor = isVertical ? 'row-resize' : 'col-resize';
-            // Prevent text selection while dragging
             document.body.style.userSelect = 'none'; 
         });
 
@@ -386,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isVertical = mainContent.classList.contains('flex-col');
 
             if (isVertical) {
-                // --- Vertical Resizing ---
                 const totalHeight = mainContent.offsetHeight;
                 const newEditorHeight = e.clientY - mainContent.getBoundingClientRect().top;
                 
@@ -395,7 +454,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     previewPane.style.height = `${((totalHeight - newEditorHeight - resizer.offsetHeight) / totalHeight) * 100}%`;
                 }
             } else {
-                // --- Horizontal Resizing ---
                 const totalWidth = mainContent.offsetWidth;
                 const newEditorWidth = e.clientX - mainContent.getBoundingClientRect().left;
             
@@ -411,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. EVENT LISTENERS ---
     
-    // Attach all event listeners to their respective DOM elements.
     editorTabs.addEventListener('click', handleTabClick);
     runBtn.addEventListener('click', updatePreview);
     formatBtn.addEventListener('click', formatCode);
@@ -422,6 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     responsiveControls.addEventListener('click', handleResponsiveClick);
     editorThemeBtn.addEventListener('click', toggleEditorTheme);
     layoutToggleBtn.addEventListener('click', handleLayoutToggle);
+    clearConsoleBtn.addEventListener('click', () => { consoleOutput.innerHTML = ''; });
 
     editorZoomInBtn.addEventListener('click', () => {
         editorFontSize++;
@@ -429,43 +487,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     editorZoomOutBtn.addEventListener('click', () => {
-        if (editorFontSize > 8) { // Prevent font from becoming too small
+        if (editorFontSize > 8) {
             editorFontSize--;
             updateEditorFontSize();
         }
     });
     
-    // Reset manual layout override on window resize for predictable responsive behavior.
     window.addEventListener('resize', () => {
-        // We only need to call updateLayout, it will handle everything.
-        // We set forcedLayout to null so the responsive behavior kicks in again.
         forcedLayout = null; 
         updateLayout();
+    });
+
+    // Listen for console messages from the iframe
+    window.addEventListener('message', (event) => {
+        if (event.source !== previewIframe.contentWindow) return;
+        const { source, level, message } = event.data;
+        if (source === 'iframe-console') {
+            renderConsoleMessage(level, message);
+        }
     });
 
 
     // --- 7. INITIAL SETUP CALLS ---
     
-    // Run necessary setup functions when the application loads.
     populateFooter();
     initializeResizer();
     
-    // Initialize ACE editors (function is in editor.js)
     editors = initializeEditors(APP_CONFIG.defaultEditorContent);
     
-    // Set the initial font size and layout for the editors.
     updateEditorFontSize();
     updateLayout();
 
-    // Setup the debounced preview update on any code change.
     const debouncedUpdate = debounce(updatePreview, 500);
     Object.values(editors).forEach(editor => {
         editor.session.on('change', debouncedUpdate);
     });
 
-    // Render the initial preview with default content.
     updatePreview();
-    // Set the initial active state for the responsive controls.
     document.querySelector('.responsive-btn[data-size="100%"]')?.classList.add('active');
     
     console.log("HTML Previewer Initialized Successfully.");

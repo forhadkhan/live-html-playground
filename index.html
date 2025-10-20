@@ -59,6 +59,7 @@
                     <button data-editor="html" class="px-2 lg:px-3 xl:px-4 tab-btn active">HTML</button>
                     <button data-editor="css" class="px-2 lg:px-3 xl:px-4 tab-btn">CSS</button>
                     <button data-editor="js" class="px-2 lg:px-3 xl:px-4 tab-btn">JavaScript</button>
+                    <button data-editor="console" class="px-2 lg:px-3 xl:px-4 tab-btn">Console</button>
                 </div>
                 <!-- Editor Controls -->
                 <div class="flex items-center space-x-1 xl:space-x-2">
@@ -76,11 +77,18 @@
                     </button>
                 </div>
             </div>
-            <!-- Editor Instances -->
+            <!-- Editor Instances & Console -->
             <div class="flex-1 relative">
                 <div id="html-editor" class="editor-instance absolute inset-0"></div>
                 <div id="css-editor" class="editor-instance absolute inset-0" style="visibility: hidden;"></div>
                 <div id="js-editor" class="editor-instance absolute inset-0" style="visibility: hidden;"></div>
+                <div id="console-panel" class="editor-instance absolute inset-0 p-2 flex flex-col bg-gray-900 text-sm font-mono text-white" style="visibility: hidden;">
+                    <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                        <span class="text-xs text-gray-400">Preview Console Logs</span>
+                        <button id="clear-console-btn" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">Clear</button>
+                    </div>
+                    <div id="console-output" class="flex-1 overflow-y-auto"></div>
+                </div>
             </div>
         </div>
 

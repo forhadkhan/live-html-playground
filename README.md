@@ -11,6 +11,7 @@ It’s perfect for quick prototyping, learning, or quick checking web snippets, 
 Packed with features to offer a smooth, professional, and modern development experience:
 
 * **Tri-Panel Code Editor:** Separate, tabbed editors for HTML, CSS, and JavaScript, powered by **ACE Editor** for syntax highlighting, autocompletion, and themes.
+* **Session Persistence:** Your code and preferences (theme, layout, font size, etc.) are automatically saved in your browser. Never lose your work on a refresh!
 * **Real-Time Preview:** Instantly see your code come to life in the preview pane. Updates automatically as you type (with debounce) or manually using the **Run** button.
 * **Console Output:** View JavaScript logs and errors directly within the built-in console panel.
 * **Code Formatting:** Integrated **Prettier** for one-click code beautification of HTML, CSS, and JavaScript.
@@ -28,6 +29,8 @@ Packed with features to offer a smooth, professional, and modern development exp
   * **Editor Fullscreen:** Focus solely on your code.
   * **Preview Fullscreen:** View your project distraction-free.
 * **Editor Configuration:** Customize tab width (2 or 4 spaces) to match your coding style.
+* **Enhanced Accessibility:** Built with keyboard navigation in mind, featuring custom high-visibility focus styles and an Esc key command to easily move focus out of the code editor.
+* **Secure by Design:** Utilizes Subresource Integrity (SRI) on all third-party scripts to protect against potential CDN-based attacks.
 * **Export as ZIP:** Download your full project (HTML, CSS, and JS) bundled neatly into a single `.zip` file.
 
 ---
@@ -42,6 +45,7 @@ Built for speed, simplicity, and portability using modern client-side technologi
 * **Formatter:** Prettier — for consistent and clean code formatting
 * **File Packaging:** JSZip — for in-browser ZIP creation
 * **Icons:** Lucide Icons — sleek and modern SVG icon set
+* **Persistence:** Browser localStorage API
 
 ---
 

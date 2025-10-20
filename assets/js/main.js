@@ -1,25 +1,39 @@
 /**
- * @file Main application logic for the HTML Previewer.
- * @description This script handles all user interactions, state management,
- * and the core functionality of the application, including editor tab management,
- * live preview updates, code formatting, file downloading, and UI resizing.
- * It ties together the ACE editors (editor.js) and the app configuration (config.js).
+ * @file main.js
+ * @title Live HTML Playground — Main Application Script
+ * @description Handles all interactive logic and dynamic UI behavior of the Live HTML Playground.
+ *
+ * This module manages:
+ * - Initialization and binding of ACE editors (HTML, CSS, JS)
+ * - Real-time live preview rendering inside an iframe
+ * - Tab management for code panels and console output
+ * - User preferences persistence via localStorage (theme, layout, font size, tab width)
+ * - Dynamic resizing, fullscreen toggling, and responsive preview modes
+ * - Code formatting (via Prettier), copying, clearing, and ZIP download support
+ *
+ * @requires lucide
+ * @requires prettier
+ * @requires JSZip
+ * @requires ./config.js
+ * @requires ./editor.js
+ *
+ * @author
+ * Forhad Khan — https://forhadkhan.com
+ * @repository
+ * https://github.com/forhadkhan/live-html-playground
+ * @license MIT
  */
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. INITIALIZATION ---
-
-    // Initialize Lucide icons as soon as the DOM is ready.
     lucide.createIcons();
     
     // --- 2. DOM ELEMENT REFERENCES ---
-    
-    // Cache all necessary DOM elements for quick and efficient access.
     const header = document.querySelector('header');
     const mainContent = document.querySelector('main');
     const footer = document.getElementById('app-footer');
     const editorTabs = document.getElementById('editor-tabs');
-    const editorInstances = document.querySelectorAll('.editor-instance');
     const previewIframe = document.getElementById('preview-iframe');
     const runBtn = document.getElementById('run-btn');
     const formatBtn = document.getElementById('format-code-btn');
@@ -34,87 +48,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const editorZoomInBtn = document.getElementById('editor-zoom-in-btn');
     const editorZoomOutBtn = document.getElementById('editor-zoom-out-btn');
     const editorThemeBtn = document.getElementById('editor-theme-btn');
+    const editorCopyBtn = document.getElementById('editor-copy-btn');
+    const editorClearBtn = document.getElementById('editor-clear-btn');
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
     const consoleOutput = document.getElementById('console-output');
     const clearConsoleBtn = document.getElementById('clear-console-btn');
     const appHeaderTitle = document.getElementById('app-header-title');
 
     // --- 3. STATE MANAGEMENT ---
+	// A reference to all initialized ACE editor instances.
+	let editors = {};
+	// Tracks the current fullscreen state to manage toggling.
+	let currentFullscreen = null; // Can be null, 'editor', or 'preview'.
+	// Timer for debouncing the live preview update.
+	// DEPRECATED: The timer is now managed inside the debounce closure.
+	// let debounceTimer;
 
-    // A reference to all initialized ACE editor instances.
-    let editors = {};
-    // Tracks the current fullscreen state to manage toggling.
-    let currentFullscreen = null; // Can be null, 'editor', or 'preview'.
-    // Timer for debouncing the live preview update.
-    let debounceTimer;
-    // Holds the current font size for the editors.
-    let editorFontSize = 14; // Default: 14px
-    // Holds the current theme for the editors.
-    let currentEditorTheme = 'dark'; // 'dark' or 'light'
+	// Holds the current font size for the editors.
+	let editorFontSize = 14; // Default: 14px
+	// Holds the current theme for the editors.
+    let currentEditorTheme = 'dark';
     const editorThemes = {
         dark: "ace/theme/tomorrow_night_eighties",
         light: "ace/theme/chrome"
     };
-    // Stores the user's manual layout choice ('vertical' or 'horizontal').
-    // 'null' means the layout is automatic based on viewport width.
     let forcedLayout = null;
+    const LOCAL_STORAGE_KEYS = {
+        code: 'live-html-editor-code',
+        prefs: 'live-html-editor-prefs'
+    };
     
     // --- 4. UTILITY FUNCTIONS ---
-
-    /**
-     * A simple debounce function to limit the rate at which a function gets called.
-     * This is crucial for the live preview to prevent updates on every single keystroke.
-     * @param {Function} func The function to debounce.
-     * @param {number} delay The debounce delay in milliseconds.
-     * @returns {Function} The debounced function.
-     */
-    const debounce = (func, delay) => {
-        return function(...args) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-    };
+	/**
+	 * A simple debounce function to limit the rate at which a function gets called.
+	 * This is crucial for the live preview to prevent updates on every single keystroke.
+	 * @param {Function} func The function to debounce.
+	 * @param {number} delay The debounce delay in milliseconds.
+	 * @returns {Function} The debounced function.
+	 */
+	const debounce = (func, delay) => {
+		// The timer variable MUST be created inside the closure.
+		// This ensures that each debounced function gets its own, independent timer
+		// and they don't cancel each other out.
+		let timer;
+		return function (...args) {
+			clearTimeout(timer);
+			timer = setTimeout(() => {
+				func.apply(this, args);
+			}, delay);
+		};
+	};
     
     // --- 5. CORE FUNCTION DEFINITIONS ---
 
-    /**
-     * Populates the page's meta tags and main header from the APP_CONFIG object.
-     * This is crucial for SEO and for keeping branding consistent.
-     */
-    function populateMetadataAndHeaders() {
-        if (!APP_CONFIG || !APP_CONFIG.projectInfo) return;
-
-        const { title, headerTitle, description, keywords, url, ogImage } = APP_CONFIG.projectInfo;
-        const authorName = APP_CONFIG.author.name;
-
-        // Update standard meta tags and title
-        document.title = title;
-        appHeaderTitle.textContent = headerTitle;
-        document.getElementById('meta-description').setAttribute('content', description);
-        document.getElementById('meta-keywords').setAttribute('content', keywords);
-        document.getElementById('meta-author').setAttribute('content', authorName);
-        document.getElementById('canonical-link').setAttribute('href', url);
-
-        // Update Open Graph meta tags
-        document.getElementById('og-url').setAttribute('content', url);
-        document.getElementById('og-title').setAttribute('content', title);
-        document.getElementById('og-description').setAttribute('content', description);
-        document.getElementById('og-image').setAttribute('content', ogImage);
-
-        // Update Twitter Card meta tags
-        document.getElementById('twitter-url').setAttribute('content', url);
-        document.getElementById('twitter-title').setAttribute('content', title);
-        document.getElementById('twitter-description').setAttribute('content', description);
-        document.getElementById('twitter-image').setAttribute('content', ogImage);
-    }
-
-    /**
-     * Central function to manage the editor/preview layout.
-     * It applies a vertical or horizontal layout based on the user's forced choice
-     * or the viewport width. This is the single source of truth for the layout.
-     */
     function updateLayout() {
         const LG_BREAKPOINT = 1024;
         const currentLayout = forcedLayout || (window.innerWidth < LG_BREAKPOINT ? 'vertical' : 'horizontal');
@@ -122,10 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentLayout === 'vertical') {
             mainContent.classList.remove('flex-row');
             mainContent.classList.add('flex-col');
-            
             resizer.classList.remove('w-2', 'h-auto', 'cursor-col-resize');
             resizer.classList.add('w-full', 'h-2', 'cursor-row-resize');
-
             editorPane.style.width = '100%';
             previewPane.style.width = '100%';
             editorPane.style.height = '50%';
@@ -133,118 +117,89 @@ document.addEventListener('DOMContentLoaded', () => {
         } else { // horizontal
             mainContent.classList.remove('flex-col');
             mainContent.classList.add('flex-row');
-
             resizer.classList.remove('w-full', 'h-2', 'cursor-row-resize');
             resizer.classList.add('w-2', 'h-auto', 'cursor-col-resize');
-
             editorPane.style.height = '100%';
             previewPane.style.height = '100%';
             editorPane.style.width = '50%';
             previewPane.style.width = '50%';
         }
         
-        // Update the toggle button icon to reflect the active layout.
         layoutToggleBtn.innerHTML = (currentLayout === 'vertical')
             ? '<i data-lucide="columns-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>'
             : '<i data-lucide="rows-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>';
         lucide.createIcons();
 
-        // Ensure ACE editors resize correctly after layout changes.
         setTimeout(() => Object.values(editors).forEach(e => e.resize()), 50);
     }
 
-    /**
-     * Handles clicks on the layout toggle button, cycling through manual layout choices.
-     */
     function handleLayoutToggle() {
         const isCurrentlyVertical = mainContent.classList.contains('flex-col');
         forcedLayout = isCurrentlyVertical ? 'horizontal' : 'vertical';
         updateLayout();
+        savePrefsState();
     }
 
-
-    /**
-     * Updates the font size for all ACE editor instances.
-     */
     function updateEditorFontSize() {
         Object.values(editors).forEach(editor => {
             editor.setFontSize(editorFontSize);
         });
     }
 
-    /**
-     * Toggles the editor theme between dark and light modes.
-     */
-    function toggleEditorTheme() {
-        currentEditorTheme = (currentEditorTheme === 'dark') ? 'light' : 'dark';
-        
-        // Update icon
-        editorThemeBtn.innerHTML = (currentEditorTheme === 'dark') 
-            ? '<i data-lucide="sun" class="w-4 h-4"></i>' 
-            : '<i data-lucide="moon" class="w-4 h-4"></i>';
+    function setEditorTheme(theme) {
+        currentEditorTheme = theme;
+        const icon = (currentEditorTheme === 'dark') ? 'sun' : 'moon';
+        editorThemeBtn.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i>`;
         lucide.createIcons();
-        
-        // Apply theme to all editors
         const newTheme = editorThemes[currentEditorTheme];
         Object.values(editors).forEach(editor => {
             editor.setTheme(newTheme);
         });
     }
 
-    /**
-     * Populates the footer with author and repository information from APP_CONFIG.
-     */
-    function populateFooter() {
-        if (!footer || !APP_CONFIG) return;
-        const { author, repository } = APP_CONFIG;
-        footer.innerHTML = `
-            Developed by <a href="${author.url}" target="_blank" class="text-white bg-gray-900 hover:bg-gray-950 rounded-full px-2 py-1 border border-gray-700">${author.name}</a> • 
-            View source code on <a href="${repository.url}" target="_blank" class="text-white bg-gray-900 hover:bg-gray-950 rounded-full px-2 py-1 border border-gray-700">GitHub</a>
-        `;
+    function toggleEditorTheme() {
+        const newTheme = (currentEditorTheme === 'dark') ? 'light' : 'dark';
+        setEditorTheme(newTheme);
+        savePrefsState();
     }
     
-    /**
-     * Handles tab switching in the editor pane. It updates the active styles
-     * and shows/hides the corresponding editor instance or console panel.
-     * @param {MouseEvent} e - The click event object.
-     */
     function handleTabClick(e) {
         const target = e.target.closest('.tab-btn');
         if (!target) return;
 
-        // Update active class on tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
         target.classList.add('active');
+        target.setAttribute('aria-selected', 'true');
 
         const panelType = target.dataset.editor;
+
+        // Show/hide copy/clear buttons based on tab
+        const showUtils = (panelType !== 'console');
+        editorCopyBtn.style.display = showUtils ? 'inline-flex' : 'none';
+        editorClearBtn.style.display = showUtils ? 'inline-flex' : 'none';
         
         const panelToShowId = (panelType === 'console') 
             ? 'console-panel'
             : `${panelType}-editor`;
 
-        // The querySelectorAll includes the console panel now
         document.querySelectorAll('.editor-instance').forEach(instance => {
             instance.style.visibility = (instance.id === panelToShowId) ? 'visible' : 'hidden';
         });
 
-        // Focus only if it's an actual editor
         if (panelType !== 'console') {
             editors[`${panelType}Editor`].focus();
         }
     }
 
-    /**
-     * Gathers code, injects a console interceptor, and updates the preview iframe.
-     */
     function updatePreview() {
-        // Before updating, clear the console for the new run.
         consoleOutput.innerHTML = '';
-        
         const htmlCode = editors.htmlEditor.getValue();
         const cssCode = editors.cssEditor.getValue();
         const jsCode = editors.jsEditor.getValue();
 
-        // This script will run inside the iframe, capture console calls, and send them to the parent window.
         const consoleInterceptor = `
             <script>
                 const originalConsole = { ...window.console };
@@ -254,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
                              if (arg instanceof Error) {
                                 return { __error: true, message: arg.message, stack: arg.stack };
                             }
-                            // A simple stringify works for most cases, but not circular refs. It's a safe starting point.
                             try { return JSON.parse(JSON.stringify(arg)); } catch (e) { return String(arg); }
                         });
                         window.parent.postMessage({ source: 'iframe-console', level: level, message: processedArgs }, '*');
@@ -262,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         originalConsole.error('Error posting log to parent:', e);
                     }
                 };
-
                 window.console = {
                     ...originalConsole,
                     log: (...args) => { postLog('log', args); originalConsole.log(...args); },
@@ -270,49 +223,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     warn: (...args) => { postLog('warn', args); originalConsole.warn(...args); },
                     info: (...args) => { postLog('info', args); originalConsole.info(...args); },
                 };
-                
                 window.addEventListener('error', e => postLog('error', [e.message]));
                 window.addEventListener('unhandledrejection', e => postLog('error', ['Unhandled promise rejection:', e.reason]));
             </script>
         `;
 
         const combinedHtml = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                ${consoleInterceptor}
-                <style>${cssCode}</style>
-            </head>
-            <body>
-                ${htmlCode}
-                <script>
-                    try {
-                        ${jsCode}
-                    } catch (e) {
-                        console.error(e);
-                    }
-                </script>
-            </body>
-            </html>
-        `;
+            <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+                ${consoleInterceptor}<style>${cssCode}</style></head><body>${htmlCode}<script>
+                    try { ${jsCode} } catch (e) { console.error(e); }
+                </script></body></html>`;
 
         previewIframe.srcdoc = combinedHtml;
     }
 
-    /**
-     * Renders a single log message to the console output panel.
-     * @param {string} level - The console level (e.g., 'log', 'error').
-     * @param {Array} args - An array of arguments passed to the console method.
-     */
     function renderConsoleMessage(level, args) {
         const logEntry = document.createElement('div');
         logEntry.className = `log-entry log-${level}`;
-
         const messageContainer = document.createElement('div');
         messageContainer.className = 'log-message';
-
         const formattedArgs = args.map(arg => {
             if (typeof arg === 'object' && arg !== null) {
                 if (arg.__error) return `${arg.message}\n${arg.stack || ''}`;
@@ -330,20 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
         consoleOutput.scrollTop = consoleOutput.scrollHeight;
     }
 
-
-    /**
-     * Formats the code in the currently active editor using the Prettier library.
-     */
     function formatCode() {
         const activeTab = document.querySelector('.tab-btn.active');
         if (!activeTab || activeTab.dataset.editor === 'console') return;
-
         const editorKey = `${activeTab.dataset.editor}Editor`;
         const activeEditor = editors[editorKey];
         const mode = activeTab.dataset.editor;
-
         const parsers = { html: 'html', css: 'css', js: 'babel' };
-
         try {
             const formattedCode = prettier.format(activeEditor.getValue(), {
                 parser: parsers[mode],
@@ -356,84 +278,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    /**
-      * Updates the tab size for all ACE editor instances when the dropdown changes.
-    */
-    function changeTabSize() {
+    function applyTabSize() {
         const size = parseInt(tabSizeSelector.value, 10);
         Object.values(editors).forEach(editor => {
             editor.session.setTabSize(size);
         });
     }
 
-    /**
-     * Uses JSZip to create a ZIP archive of the user's code (HTML, CSS, JS)
-     * and triggers a browser download with a timestamped filename.
-     */
+    function handleTabSizeChange() {
+        applyTabSize();
+        savePrefsState();
+    }
+
     function downloadZip() {
         const zip = new JSZip();
         const htmlCode = editors.htmlEditor.getValue();
         const cssCode = editors.cssEditor.getValue();
         const jsCode = editors.jsEditor.getValue();
-
-        const linkedHtml = `<!DOCTYPE html>
-                            <html lang="en">
-                            <head>
-                                <meta charset="UTF-8">
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>Code Project</title>
-                                <link rel="stylesheet" href="style.css">
-                            </head>
-                            <body>
-                                ${htmlCode}
-                                <script src="script.js"></script>
-                            </body>
-                            </html>`;
-
+        const linkedHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Project</title><link rel="stylesheet" href="style.css"></head><body>${htmlCode}<script src="script.js"></script></body></html>`;
         zip.file("index.html", linkedHtml);
         zip.file("style.css", cssCode);
         zip.file("script.js", jsCode);
-
         zip.generateAsync({ type: "blob" }).then(content => {
-            // --- Create timestamp for the filename ---
             const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const timestamp = `${year}${month}${day}-${hours}${minutes}${seconds}`;
+            const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
             const filename = `code-project-${timestamp}.zip`;
-
-            // --- Trigger download ---
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
-            link.download = filename; // Use the new timestamped filename
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         });
     }
 
-    /**
-     * Toggles fullscreen mode for a specific pane ('editor' or 'preview').
-     * @param {'editor' | 'preview'} pane - The pane to toggle fullscreen.
-     */
     function toggleFullscreen(pane) {
         const isExiting = currentFullscreen === pane;
-
         header.style.display = 'flex';
         editorPane.style.display = 'flex';
         previewPane.style.display = 'flex';
         resizer.style.display = 'flex';
         currentFullscreen = null;
-        
         updateLayout();
-        
         editorFullscreenBtn.innerHTML = '<i data-lucide="maximize" class="w-4 h-4"></i>';
         previewFullscreenBtn.innerHTML = '<i data-lucide="maximize" class="w-4 h-4"></i>';
-
         if (!isExiting) {
             if (pane === 'editor') {
                 previewPane.style.display = 'none';
@@ -452,50 +340,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentFullscreen = 'preview';
             }
         }
-
         lucide.createIcons();
         setTimeout(() => Object.values(editors).forEach(e => e.resize()), 50);
     }
 
-    /**
-     * Handles clicks on the responsive control buttons, resizing the preview iframe.
-     */
     function handleResponsiveClick(e) {
         const target = e.target.closest('.responsive-btn');
         if (!target) return;
-
         document.querySelectorAll('.responsive-btn').forEach(btn => btn.classList.remove('active'));
         target.classList.add('active');
         previewIframe.style.width = target.dataset.size;
     }
 
-    /**
-     * Initializes the draggable resizer, adapting for both vertical and horizontal layouts.
-     */
     function initializeResizer() {
         let isResizing = false;
-
-        resizer.addEventListener('mousedown', (e) => { 
+        resizer.addEventListener('mousedown', () => { 
             isResizing = true; 
-            const isVertical = mainContent.classList.contains('flex-col');
-            document.body.style.cursor = isVertical ? 'row-resize' : 'col-resize';
+            document.body.style.cursor = mainContent.classList.contains('flex-col') ? 'row-resize' : 'col-resize';
             document.body.style.userSelect = 'none'; 
         });
-
         document.addEventListener('mouseup', () => { 
             isResizing = false; 
             document.body.style.cursor = 'default';
             document.body.style.userSelect = 'auto';
         });
-
         document.addEventListener('mousemove', (e) => {
             if (!isResizing) return;
             const isVertical = mainContent.classList.contains('flex-col');
-
             if (isVertical) {
                 const totalHeight = mainContent.offsetHeight;
                 const newEditorHeight = e.clientY - mainContent.getBoundingClientRect().top;
-                
                 if (newEditorHeight > 50 && (totalHeight - newEditorHeight) > 50) {
                     editorPane.style.height = `${(newEditorHeight / totalHeight) * 100}%`;
                     previewPane.style.height = `${((totalHeight - newEditorHeight - resizer.offsetHeight) / totalHeight) * 100}%`;
@@ -503,7 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const totalWidth = mainContent.offsetWidth;
                 const newEditorWidth = e.clientX - mainContent.getBoundingClientRect().left;
-            
                 if (newEditorWidth > 50 && (totalWidth - newEditorWidth) > 50) {
                     editorPane.style.width = `${(newEditorWidth / totalWidth) * 100}%`;
                     previewPane.style.width = `${((totalWidth - newEditorWidth - resizer.offsetWidth) / totalWidth) * 100}%`;
@@ -513,39 +386,112 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function copyActiveEditorContent() {
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (!activeTab || activeTab.dataset.editor === 'console') return;
+        const editorKey = `${activeTab.dataset.editor}Editor`;
+        const activeEditor = editors[editorKey];
+        navigator.clipboard.writeText(activeEditor.getValue()).then(() => {
+            editorCopyBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-400"></i>';
+            lucide.createIcons();
+            setTimeout(() => {
+                editorCopyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+                lucide.createIcons();
+            }, 1500);
+        });
+    }
 
-    // --- 6. EVENT LISTENERS ---
+    function clearActiveEditorContent() {
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (!activeTab || activeTab.dataset.editor === 'console') return;
+        const editorKey = `${activeTab.dataset.editor}Editor`;
+        editors[editorKey].setValue('', -1);
+    }
+
+    // --- 6. LOCALSTORAGE & STATE PERSISTENCE ---
+
+    function saveCodeState() {
+        try {
+            const codeState = {
+                html: editors.htmlEditor.getValue(),
+                css: editors.cssEditor.getValue(),
+                js: editors.jsEditor.getValue(),
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEYS.code, JSON.stringify(codeState));
+        } catch (e) {
+            console.error("Failed to save code state:", e);
+        }
+    }
+
+    function savePrefsState() {
+        try {
+            const prefsState = {
+                theme: currentEditorTheme,
+                fontSize: editorFontSize,
+                tabSize: parseInt(tabSizeSelector.value, 10),
+                layout: forcedLayout,
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEYS.prefs, JSON.stringify(prefsState));
+        } catch (e) {
+            console.error("Failed to save preferences:", e);
+        }
+    }
+
+    function loadState() {
+        const savedCode = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.code));
+        const savedPrefs = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.prefs));
+
+        if (savedPrefs) {
+            editorFontSize = savedPrefs.fontSize || 14;
+            tabSizeSelector.value = savedPrefs.tabSize || 4;
+            forcedLayout = savedPrefs.layout || null;
+            setEditorTheme(savedPrefs.theme || 'dark');
+        }
+
+        const initialContent = savedCode || APP_CONFIG.defaultEditorContent;
+        editors = initializeEditors(initialContent);
+
+        updateEditorFontSize();
+        applyTabSize(); // Apply loaded size without re-saving
+    }
+
+    // --- 7. EVENT LISTENERS ---
     
     editorTabs.addEventListener('click', handleTabClick);
     runBtn.addEventListener('click', updatePreview);
+    editorTabs.addEventListener('click', handleTabClick);
+    runBtn.addEventListener('click', updatePreview);
     formatBtn.addEventListener('click', formatCode);
-    tabSizeSelector.addEventListener('change', changeTabSize);
+    tabSizeSelector.addEventListener('change', handleTabSizeChange);
     downloadZipBtn.addEventListener('click', downloadZip);
     editorFullscreenBtn.addEventListener('click', () => toggleFullscreen('editor'));
     previewFullscreenBtn.addEventListener('click', () => toggleFullscreen('preview'));
     responsiveControls.addEventListener('click', handleResponsiveClick);
     editorThemeBtn.addEventListener('click', toggleEditorTheme);
+    editorCopyBtn.addEventListener('click', copyActiveEditorContent);
+    editorClearBtn.addEventListener('click', clearActiveEditorContent);
     layoutToggleBtn.addEventListener('click', handleLayoutToggle);
     clearConsoleBtn.addEventListener('click', () => { consoleOutput.innerHTML = ''; });
 
     editorZoomInBtn.addEventListener('click', () => {
         editorFontSize++;
         updateEditorFontSize();
+        savePrefsState();
     });
 
     editorZoomOutBtn.addEventListener('click', () => {
         if (editorFontSize > 8) {
             editorFontSize--;
             updateEditorFontSize();
+            savePrefsState();
         }
     });
     
     window.addEventListener('resize', () => {
-        forcedLayout = null; 
+        // Do NOT reset forcedLayout, to preserve user's manual choice.
         updateLayout();
     });
 
-    // Listen for console messages from the iframe
     window.addEventListener('message', (event) => {
         if (event.source !== previewIframe.contentWindow) return;
         const { source, level, message } = event.data;
@@ -554,25 +500,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
-    // --- 7. INITIAL SETUP CALLS ---
+    // --- 8. INITIAL SETUP CALLS ---
     
-    populateMetadataAndHeaders();
-    populateFooter();
     initializeResizer();
     
-    editors = initializeEditors(APP_CONFIG.defaultEditorContent);
+    loadState();
     
-    updateEditorFontSize();
-    updateLayout();
-
+    const debouncedSaveCode = debounce(saveCodeState, 300);
     const debouncedUpdate = debounce(updatePreview, 500);
     Object.values(editors).forEach(editor => {
-        editor.session.on('change', debouncedUpdate);
+        editor.session.on('change', () => {
+            debouncedUpdate();
+            debouncedSaveCode();
+        });
     });
 
+    updateLayout();
     updatePreview();
     document.querySelector('.responsive-btn[data-size="100%"]')?.classList.add('active');
     
+    // Set initial state for copy/clear buttons
+    handleTabClick({ target: document.querySelector('.tab-btn.active') });
+    
     console.log("HTML Previewer Initialized Successfully.");
 });
+

@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
     const consoleOutput = document.getElementById('console-output');
     const clearConsoleBtn = document.getElementById('clear-console-btn');
+    const appHeaderTitle = document.getElementById('app-header-title');
 
     // --- 3. STATE MANAGEMENT ---
 
@@ -79,6 +80,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 5. CORE FUNCTION DEFINITIONS ---
 
     /**
+     * Populates the page's meta tags and main header from the APP_CONFIG object.
+     * This is crucial for SEO and for keeping branding consistent.
+     */
+    function populateMetadataAndHeaders() {
+        if (!APP_CONFIG || !APP_CONFIG.projectInfo) return;
+
+        const { title, headerTitle, description, keywords, url, ogImage } = APP_CONFIG.projectInfo;
+        const authorName = APP_CONFIG.author.name;
+
+        // Update standard meta tags and title
+        document.title = title;
+        appHeaderTitle.textContent = headerTitle;
+        document.getElementById('meta-description').setAttribute('content', description);
+        document.getElementById('meta-keywords').setAttribute('content', keywords);
+        document.getElementById('meta-author').setAttribute('content', authorName);
+        document.getElementById('canonical-link').setAttribute('href', url);
+
+        // Update Open Graph meta tags
+        document.getElementById('og-url').setAttribute('content', url);
+        document.getElementById('og-title').setAttribute('content', title);
+        document.getElementById('og-description').setAttribute('content', description);
+        document.getElementById('og-image').setAttribute('content', ogImage);
+
+        // Update Twitter Card meta tags
+        document.getElementById('twitter-url').setAttribute('content', url);
+        document.getElementById('twitter-title').setAttribute('content', title);
+        document.getElementById('twitter-description').setAttribute('content', description);
+        document.getElementById('twitter-image').setAttribute('content', ogImage);
+    }
+
+    /**
      * Central function to manage the editor/preview layout.
      * It applies a vertical or horizontal layout based on the user's forced choice
      * or the viewport width. This is the single source of truth for the layout.
@@ -113,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update the toggle button icon to reflect the active layout.
         layoutToggleBtn.innerHTML = (currentLayout === 'vertical')
-            ? '<i data-lucide="layout-panel-left" class="w-5 h-5"></i><span class="hidden sm:inline">Layout</span>'
-            : '<i data-lucide="layout-panel-top" class="w-5 h-5"></i><span class="hidden sm:inline">Layout</span>';
+            ? '<i data-lucide="columns-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>'
+            : '<i data-lucide="rows-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>';
         lucide.createIcons();
 
         // Ensure ACE editors resize correctly after layout changes.
@@ -166,8 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!footer || !APP_CONFIG) return;
         const { author, repository } = APP_CONFIG;
         footer.innerHTML = `
-            Developed by <a href="${author.github}" target="_blank" class="text-blue-400 hover:underline">${author.name}</a>.
-            This project is open-source. View on <a href="${repository.url}" target="_blank" class="text-blue-400 hover:underline">GitHub</a>.
+            Developed by <a href="${author.url}" target="_blank" class="text-white bg-gray-900 hover:bg-gray-950 rounded-full px-2 py-1 border border-gray-700">${author.name}</a> • 
+            View source code on <a href="${repository.url}" target="_blank" class="text-white bg-gray-900 hover:bg-gray-950 rounded-full px-2 py-1 border border-gray-700">GitHub</a>
         `;
     }
     
@@ -205,6 +237,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * Gathers code, injects a console interceptor, and updates the preview iframe.
      */
     function updatePreview() {
+        // Before updating, clear the console for the new run.
+        consoleOutput.innerHTML = '';
+        
         const htmlCode = editors.htmlEditor.getValue();
         const cssCode = editors.cssEditor.getValue();
         const jsCode = editors.jsEditor.getValue();
@@ -333,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Uses JSZip to create a ZIP archive of the user's code (HTML, CSS, JS)
-     * and triggers a browser download.
+     * and triggers a browser download with a timestamped filename.
      */
     function downloadZip() {
         const zip = new JSZip();
@@ -342,27 +377,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const jsCode = editors.jsEditor.getValue();
 
         const linkedHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Project</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    ${htmlCode}
-    <script src="script.js"></script>
-</body>
-</html>`;
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>Code Project</title>
+                                <link rel="stylesheet" href="style.css">
+                            </head>
+                            <body>
+                                ${htmlCode}
+                                <script src="script.js"></script>
+                            </body>
+                            </html>`;
 
         zip.file("index.html", linkedHtml);
         zip.file("style.css", cssCode);
         zip.file("script.js", jsCode);
 
         zip.generateAsync({ type: "blob" }).then(content => {
+            // --- Create timestamp for the filename ---
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timestamp = `${year}${month}${day}-${hours}${minutes}${seconds}`;
+            const filename = `code-project-${timestamp}.zip`;
+
+            // --- Trigger download ---
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
-            link.download = "code-project.zip";
+            link.download = filename; // Use the new timestamped filename
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -510,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 7. INITIAL SETUP CALLS ---
     
+    populateMetadataAndHeaders();
     populateFooter();
     initializeResizer();
     
@@ -528,4 +576,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log("HTML Previewer Initialized Successfully.");
 });
-

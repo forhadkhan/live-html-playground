@@ -3,7 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live HTML Playground - Online HTML Editor & Live Preview</title>
+    
+    <!-- Title will be dynamically inserted by JS -->
+    <title></title>
+
+    <!-- SEO & Core Meta Tags -->
+    <meta id="meta-description" name="description" content="">
+    <meta id="meta-keywords" name="keywords" content="">
+    <meta id="meta-author" name="author" content="">
+    <link id="canonical-link" rel="canonical" href="" />
+    <link id="favicon" rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta id="og-type" property="og:type" content="website">
+    <meta id="og-url" property="og:url" content="">
+    <meta id="og-title" property="og:title" content="">
+    <meta id="og-description" property="og:description" content="">
+    <meta id="og-image" property="og:image" content="">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta id="twitter-card" property="twitter:card" content="summary_large_image">
+    <meta id="twitter-url" property="twitter:url" content="">
+    <meta id="twitter-title" property="twitter:title" content="">
+    <meta id="twitter-description" property="twitter:description" content="">
+    <meta id="twitter-image" property="twitter:image" content="">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -18,16 +42,12 @@
         <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
                  <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                <h1 class="text-lg sm:text-xl font-bold text-white">HTML Editor & Live Preview</h1>
+                <h1 id="app-header-title" class="text-lg lg:text-xl font-bold text-white"></h1>
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <button id="layout-toggle-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Toggle Layout">
-                <i data-lucide="layout-panel-top" class="w-5 h-5"></i>
-                <span class="hidden sm:inline">Layout</span>
-            </button>
             <div class="flex items-center space-x-2">
-                <label for="tab-size" class="text-sm font-medium hidden sm:inline">Tab Size:</label>
+                <label for="tab-size" class="text-xs lg:text-sm font-medium hidden md:inline">Tab Size:</label>
                 <select id="tab-size" class="bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="2">2</option>
                     <option value="4" selected>4</option>
@@ -35,27 +55,31 @@
             </div>
              <button id="format-code-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Format Code">
                 <i data-lucide="align-left" class="w-5 h-5"></i>
-                <span class="hidden sm:inline">Format</span>
+                <span class="hidden md:inline">Format</span>
             </button>
             <button id="run-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Force Run (Ctrl+Enter)">
                 <i data-lucide="play" class="w-5 h-5"></i>
-                <span class="hidden sm:inline">Run</span>
+                <span class="hidden md:inline">Run</span>
             </button>
             <button id="download-zip-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Download Project as ZIP">
                 <i data-lucide="download" class="w-5 h-5"></i>
-                <span class="hidden sm:inline">Download</span>
+                <span class="hidden md:inline">Download</span>
+            </button>
+            <button id="layout-toggle-btn" class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1" title="Toggle Layout">
+                <i data-lucide="rows-2" class="w-5 h-5"></i>
+                <span class="hidden md:inline">Layout</span>
             </button>
         </div>
     </header>
 
     <!-- Main Content (Editor + Preview) -->
-    <main class="flex flex-1 overflow-hidden">
+    <main class="flex flex-1 overflow-hidden min-h-screen">
         <!-- Editor Pane -->
         <div id="editor-pane" class="flex flex-col bg-gray-900">
             <!-- Editor Header -->
             <div class="flex items-center justify-between h-10 px-2 bg-gray-800 border-b border-gray-500">
                 <!-- Tabs -->
-                <div id="editor-tabs" class="flex h-full">
+                <div id="editor-tabs" class="flex h-full text-xs sm:text-sm lg:text-base font-medium">
                     <button data-editor="html" class="px-2 lg:px-3 xl:px-4 tab-btn active">HTML</button>
                     <button data-editor="css" class="px-2 lg:px-3 xl:px-4 tab-btn">CSS</button>
                     <button data-editor="js" class="px-2 lg:px-3 xl:px-4 tab-btn">JavaScript</button>
@@ -124,7 +148,7 @@
     </main>
 
     <!-- Footer -->
-    <footer id="app-footer" class="bg-gray-800 border-t border-gray-700 p-2 text-center text-xs text-gray-400 z-20">
+    <footer id="app-footer" class="bg-gray-800 border-t border-gray-700 py-4 text-center text-xs text-gray-400 z-20">
         <!-- Content injected by JS -->
     </footer>
 

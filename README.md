@@ -90,5 +90,5 @@ A simple and organized structure for easy navigation:
 
 ## **Author**
 
-**[Forhad Khan](https://forhadakhan.com)**
-GitHub: [@forhadakhan](https://github.com/forhadakhan)
+**[Forhad Khan](https://forhadkhan.com)**
+GitHub: [@forhadkhan](https://github.com/forhadkhan)

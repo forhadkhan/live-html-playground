@@ -28,7 +28,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. INITIALIZATION ---
     lucide.createIcons();
-    
+
     // --- 2. DOM ELEMENT REFERENCES ---
     const header = document.querySelector('header');
     const mainContent = document.querySelector('main');
@@ -58,17 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const libButtons = document.querySelectorAll('.lib-btn');
 
     // --- 3. STATE MANAGEMENT ---
-	// A reference to all initialized ACE editor instances.
-	let editors = {};
-	// Tracks the current fullscreen state to manage toggling.
-	let currentFullscreen = null; // Can be null, 'editor', or 'preview'.
-	// Timer for debouncing the live preview update.
-	// DEPRECATED: The timer is now managed inside the debounce closure.
-	// let debounceTimer;
+    // A reference to all initialized ACE editor instances.
+    let editors = {};
+    // Tracks the current fullscreen state to manage toggling.
+    let currentFullscreen = null; // Can be null, 'editor', or 'preview'.
+    // Timer for debouncing the live preview update.
+    // DEPRECATED: The timer is now managed inside the debounce closure.
+    // let debounceTimer;
 
-	// Holds the current font size for the editors.
-	let editorFontSize = 14; // Default: 14px
-	// Holds the current theme for the editors.
+    // Holds the current font size for the editors.
+    let editorFontSize = 14; // Default: 14px
+    // Holds the current theme for the editors.
     let currentEditorTheme = 'dark';
     const editorThemes = {
         dark: "ace/theme/tomorrow_night_eighties",
@@ -86,28 +86,28 @@ document.addEventListener('DOMContentLoaded', () => {
         code: 'live-html-editor-code',
         prefs: 'live-html-editor-prefs'
     };
-    
+
     // --- 4. UTILITY FUNCTIONS ---
-	/**
-	 * A simple debounce function to limit the rate at which a function gets called.
-	 * This is crucial for the live preview to prevent updates on every single keystroke.
-	 * @param {Function} func The function to debounce.
-	 * @param {number} delay The debounce delay in milliseconds.
-	 * @returns {Function} The debounced function.
-	 */
-	const debounce = (func, delay) => {
-		// The timer variable MUST be created inside the closure.
-		// This ensures that each debounced function gets its own, independent timer
-		// and they don't cancel each other out.
-		let timer;
-		return function (...args) {
-			clearTimeout(timer);
-			timer = setTimeout(() => {
-				func.apply(this, args);
-			}, delay);
-		};
-	};
-    
+    /**
+     * A simple debounce function to limit the rate at which a function gets called.
+     * This is crucial for the live preview to prevent updates on every single keystroke.
+     * @param {Function} func The function to debounce.
+     * @param {number} delay The debounce delay in milliseconds.
+     * @returns {Function} The debounced function.
+     */
+    const debounce = (func, delay) => {
+        // The timer variable MUST be created inside the closure.
+        // This ensures that each debounced function gets its own, independent timer
+        // and they don't cancel each other out.
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    };
+
     // --- 5. CORE FUNCTION DEFINITIONS ---
 
     function updateLayout() {
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             editorPane.style.width = '50%';
             previewPane.style.width = '50%';
         }
-        
+
         layoutToggleBtn.innerHTML = (currentLayout === 'vertical')
             ? '<i data-lucide="columns-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>'
             : '<i data-lucide="rows-2" class="w-5 h-5"></i><span class="hidden md:inline">Layout</span>';
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setEditorTheme(newTheme);
         savePrefsState();
     }
-    
+
     function handleTabClick(e) {
         const target = e.target.closest('.tab-btn');
         if (!target) return;
@@ -189,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const showUtils = (panelType !== 'console');
         editorCopyBtn.style.display = showUtils ? 'inline-flex' : 'none';
         editorClearBtn.style.display = showUtils ? 'inline-flex' : 'none';
-        
-        const panelToShowId = (panelType === 'console') 
+
+        const panelToShowId = (panelType === 'console')
             ? 'console-panel'
             : `${panelType}-editor`;
 
@@ -250,9 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let libraryTag = '';
         if (currentCssLibrary !== 'none' && CSS_LIBRARIES[currentCssLibrary]) {
             if (currentCssLibrary === 'tailwind') {
-               libraryTag = `<script src="${CSS_LIBRARIES[currentCssLibrary]}"></script>`;
+                libraryTag = `<script src="${CSS_LIBRARIES[currentCssLibrary]}"></script>`;
             } else {
-               libraryTag = `<link rel="stylesheet" href="${CSS_LIBRARIES[currentCssLibrary]}">`;
+                libraryTag = `<link rel="stylesheet" href="${CSS_LIBRARIES[currentCssLibrary]}">`;
             }
         }
 
@@ -278,11 +278,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return String(arg);
         }).join(' ');
-        
+
         const pre = document.createElement('pre');
         pre.textContent = formattedArgs;
         messageContainer.appendChild(pre);
-        
+
         logEntry.appendChild(messageContainer);
         consoleOutput.appendChild(logEntry);
         consoleOutput.scrollTop = consoleOutput.scrollHeight;
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Formatting error:", error);
         }
     }
-    
+
     function applyTabSize() {
         const size = parseInt(tabSizeSelector.value, 10);
         Object.values(editors).forEach(editor => {
@@ -383,15 +383,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initializeResizer() {
         let isResizing = false;
-        resizer.addEventListener('mousedown', () => { 
-            isResizing = true; 
+        resizer.addEventListener('mousedown', () => {
+            isResizing = true;
             document.body.style.cursor = mainContent.classList.contains('flex-col') ? 'row-resize' : 'col-resize';
-            document.body.style.userSelect = 'none'; 
+            document.body.style.userSelect = 'none';
+            previewIframe.style.pointerEvents = 'none';
         });
-        document.addEventListener('mouseup', () => { 
-            isResizing = false; 
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
             document.body.style.cursor = 'default';
             document.body.style.userSelect = 'auto';
+            previewIframe.style.pointerEvents = 'auto';
         });
         document.addEventListener('mousemove', (e) => {
             if (!isResizing) return;
@@ -480,9 +482,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const initialContent = savedCode || APP_CONFIG.defaultEditorContent;
         editors = initializeEditors(initialContent);
-        
+
         if (savedCode && savedCode.cssLib) {
-             setCssLibrary(savedCode.cssLib);
+            setCssLibrary(savedCode.cssLib);
         }
 
         updateEditorFontSize();
@@ -503,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 7. EVENT LISTENERS ---
-    
+
     editorTabs.addEventListener('click', handleTabClick);
     runBtn.addEventListener('click', updatePreview);
     editorTabs.addEventListener('click', handleTabClick);
@@ -540,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             savePrefsState();
         }
     });
-    
+
     window.addEventListener('resize', () => {
         // Do NOT reset forcedLayout, to preserve user's manual choice.
         updateLayout();
@@ -555,11 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 8. INITIAL SETUP CALLS ---
-    
+
     initializeResizer();
-    
+
     loadState();
-    
+
     const debouncedSaveCode = debounce(saveCodeState, 300);
     const debouncedUpdate = debounce(updatePreview, 500);
     Object.values(editors).forEach(editor => {
@@ -572,10 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLayout();
     updatePreview();
     document.querySelector('.responsive-btn[data-size="100%"]')?.classList.add('active');
-    
+
     // Set initial state for copy/clear buttons
     handleTabClick({ target: document.querySelector('.tab-btn.active') });
-    
+
     console.log("HTML Previewer Initialized Successfully.");
 });
 

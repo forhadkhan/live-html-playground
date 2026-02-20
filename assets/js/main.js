@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const consoleOutput = document.getElementById('console-output');
     const clearConsoleBtn = document.getElementById('clear-console-btn');
     const appHeaderTitle = document.getElementById('app-header-title');
+    const cssLibraryControls = document.getElementById('css-library-controls');
+    const libButtons = document.querySelectorAll('.lib-btn');
 
     // --- 3. STATE MANAGEMENT ---
 	// A reference to all initialized ACE editor instances.
@@ -73,6 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
         light: "ace/theme/chrome"
     };
     let forcedLayout = null;
+    let currentCssLibrary = 'none';
+    const CSS_LIBRARIES = {
+        tailwind: 'https://cdn.tailwindcss.com',
+        bootstrap: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+        mui: 'https://unpkg.com/@mui/material@latest/dist/material-ui.min.css',
+        bulma: 'https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css'
+    };
     const LOCAL_STORAGE_KEYS = {
         code: 'live-html-editor-code',
         prefs: 'live-html-editor-prefs'
@@ -192,6 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (panelType !== 'console') {
             editors[`${panelType}Editor`].focus();
         }
+
+        // Toggle CSS library controls visibility
+        if (panelType === 'css') {
+            cssLibraryControls.style.display = 'inline-flex';
+        } else {
+            cssLibraryControls.style.display = 'none';
+        }
     }
 
     function updatePreview() {
@@ -209,7 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
                              if (arg instanceof Error) {
                                 return { __error: true, message: arg.message, stack: arg.stack };
                             }
-                            try { return JSON.parse(JSON.stringify(arg)); } catch (e) { return String(arg); }
+                            try { return JSON.parse(JSON.stringify(arg)); } catch (e) {
+                                // Catch circular references and non-serializable values
+                                try { return String(arg); } catch(err) { return "[Unserializable Value]"; }
+                            }
                         });
                         window.parent.postMessage({ source: 'iframe-console', level: level, message: processedArgs }, '*');
                     } catch (e) {
@@ -228,8 +247,18 @@ document.addEventListener('DOMContentLoaded', () => {
             </script>
         `;
 
+        let libraryTag = '';
+        if (currentCssLibrary !== 'none' && CSS_LIBRARIES[currentCssLibrary]) {
+            if (currentCssLibrary === 'tailwind') {
+               libraryTag = `<script src="${CSS_LIBRARIES[currentCssLibrary]}"></script>`;
+            } else {
+               libraryTag = `<link rel="stylesheet" href="${CSS_LIBRARIES[currentCssLibrary]}">`;
+            }
+        }
+
         const combinedHtml = `
             <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+                ${libraryTag}
                 ${consoleInterceptor}<style>${cssCode}</style></head><body>${htmlCode}<script>
                     try { ${jsCode} } catch (e) { console.error(e); }
                 </script></body></html>`;
@@ -416,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 html: editors.htmlEditor.getValue(),
                 css: editors.cssEditor.getValue(),
                 js: editors.jsEditor.getValue(),
+                cssLib: currentCssLibrary,
             };
             localStorage.setItem(LOCAL_STORAGE_KEYS.code, JSON.stringify(codeState));
         } catch (e) {
@@ -450,9 +480,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const initialContent = savedCode || APP_CONFIG.defaultEditorContent;
         editors = initializeEditors(initialContent);
+        
+        if (savedCode && savedCode.cssLib) {
+             setCssLibrary(savedCode.cssLib);
+        }
 
         updateEditorFontSize();
         applyTabSize(); // Apply loaded size without re-saving
+    }
+
+    function setCssLibrary(lib) {
+        currentCssLibrary = lib;
+        libButtons.forEach(btn => {
+            if (btn.dataset.lib === lib) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        updatePreview();
+        saveCodeState();
     }
 
     // --- 7. EVENT LISTENERS ---
@@ -470,6 +517,13 @@ document.addEventListener('DOMContentLoaded', () => {
     editorThemeBtn.addEventListener('click', toggleEditorTheme);
     editorCopyBtn.addEventListener('click', copyActiveEditorContent);
     editorClearBtn.addEventListener('click', clearActiveEditorContent);
+
+    cssLibraryControls.addEventListener('click', (e) => {
+        const btn = e.target.closest('.lib-btn');
+        if (btn) {
+            setCssLibrary(btn.dataset.lib);
+        }
+    });
     layoutToggleBtn.addEventListener('click', handleLayoutToggle);
     clearConsoleBtn.addEventListener('click', () => { consoleOutput.innerHTML = ''; });
 

@@ -1,495 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- Static SEO and Social Sharing Meta Tags -->
-        <title>Live HTML Playground - Online HTML, CSS, & JS Editor</title>
-        <meta
-            name="description"
-            content="Browser-based real-time HTML, CSS, and JavaScript editor with live preview. Ideal for web development practice, prototyping, debugging, and quick code testing."
-        />
-        <meta
-            name="keywords"
-            content="html editor, css editor, javascript editor, live preview, live code editor, code playground, web development tool, frontend, web prototyping, online editor"
-        />
-        <meta name="author" content="Forhad Khan" />
-        <link
-            rel="canonical"
-            href="https://forhadakhan.github.io/live-html-playground/"
-        />
-        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
-        <meta
-            property="og:url"
-            content="https://forhadakhan.github.io/live-html-playground/"
-        />
-        <meta
-            property="og:title"
-            content="Live HTML Playground - Online HTML, CSS, & JS Editor"
-        />
-        <meta
-            property="og:description"
-            content="A free, client-side, real-time HTML, CSS, and JavaScript code editor and live previewer."
-        />
-        <meta
-            property="og:image"
-            content="https://forhadakhan.github.io/live-html-playground/assets/img/og-1200x630.jpg"
-        />
+    <!-- Static SEO and Social Sharing Meta Tags -->
+    <title>Live HTML Playground - Online HTML, CSS, & JS Editor</title>
+    <meta name="description"
+        content="Browser-based real-time HTML, CSS, and JavaScript editor with live preview. Ideal for web development practice, prototyping, debugging, and quick code testing." />
+    <meta name="keywords"
+        content="html editor, css editor, javascript editor, live preview, live code editor, code playground, web development tool, frontend, web prototyping, online editor" />
+    <meta name="author" content="Forhad Khan" />
+    <link rel="canonical" href="https://forhadkhan.github.io/live-html-playground/" />
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
 
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta
-            property="twitter:url"
-            content="https://forhadakhan.github.io/live-html-playground/"
-        />
-        <meta
-            property="twitter:title"
-            content="Live HTML Playground - Online HTML, CSS, & JS Editor"
-        />
-        <meta
-            property="twitter:description"
-            content="A free, client-side, real-time HTML, CSS, and JavaScript code editor and live previewer."
-        />
-        <meta
-            property="twitter:image"
-            content="https://forhadakhan.github.io/live-html-playground/assets/img/og-1200x630.jpg"
-        />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://forhadkhan.github.io/live-html-playground/" />
+    <meta property="og:title" content="Live HTML Playground - Online HTML, CSS, & JS Editor" />
+    <meta property="og:description"
+        content="A free, client-side, real-time HTML, CSS, and JavaScript code editor and live previewer." />
+    <meta property="og:image" content="https://forhadkhan.github.io/live-html-playground/assets/img/og-1200x630.jpg" />
 
-        <!-- CDNs and Local Styles -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <!-- SRI Security Fix: Changed 'xintegrity' to 'integrity' -->
-        <script
-            src="https://unpkg.com/lucide@0.378.0"
-            xintegrity="sha384-NlP+3ci2BwILx2zIu2h5i2l5k1s0r1Yf7rZp3O3n2O1lK1UTb2g2tqJgYpWpW3V/"
-            crossorigin="anonymous"
-        ></script>
-        <link rel="stylesheet" href="assets/css/style.css" />
-    </head>
-    <body class="bg-gray-900 text-gray-200 flex flex-col h-screen font-sans">
-        <!-- Header -->
-        <header
-            class="bg-gray-800 border-b border-gray-700 px-2 py-1 flex flex-col sm:flex-row items-center justify-between shadow-md z-20 gap-2 sm:gap-0"
-        >
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-2">
-                    <svg
-                        class="w-4 md:w-8 h-4 md:h-8 text-blue-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                        ></path>
-                    </svg>
-                    <h1
-                        id="app-header-title"
-                        class="md:text-lg lg:text-xl font-bold text-white"
-                    >
-                        HTML Editor & Live Preview
-                    </h1>
-                </div>
-            </div>
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://forhadkhan.github.io/live-html-playground/" />
+    <meta property="twitter:title" content="Live HTML Playground - Online HTML, CSS, & JS Editor" />
+    <meta property="twitter:description"
+        content="A free, client-side, real-time HTML, CSS, and JavaScript code editor and live previewer." />
+    <meta property="twitter:image"
+        content="https://forhadkhan.github.io/live-html-playground/assets/img/og-1200x630.jpg" />
+
+    <!-- CDNs and Local Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SRI Security Fix: Changed 'xintegrity' to 'integrity' -->
+    <script src="https://unpkg.com/lucide@0.378.0"
+        xintegrity="sha384-NlP+3ci2BwILx2zIu2h5i2l5k1s0r1Yf7rZp3O3n2O1lK1UTb2g2tqJgYpWpW3V/"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body class="bg-gray-900 text-gray-200 flex flex-col h-screen font-sans">
+    <!-- Header -->
+    <header
+        class="bg-gray-800 border-b border-gray-700 px-2 py-1 flex flex-col sm:flex-row items-center justify-between shadow-md z-20 gap-2 sm:gap-0">
+        <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
-                <div class="flex items-center space-x-2">
-                    <label
-                        for="tab-size"
-                        class="text-xs lg:text-sm font-medium hidden md:inline"
-                        >Tab Size:</label
-                    >
-                    <select
-                        id="tab-size"
-                        class="bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="2">2</option>
-                        <option value="4" selected>4</option>
-                    </select>
-                </div>
-                <button
-                    id="format-code-btn"
-                    class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
-                    title="Format Code"
-                    aria-label="Format code"
-                >
-                    <i data-lucide="align-left" class="w-5 h-5"></i>
-                    <span class="hidden md:inline">Format</span>
-                </button>
-                <button
-                    id="run-btn"
-                    class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
-                    title="Force Run (Ctrl+Enter)"
-                    aria-label="Run code"
-                >
-                    <i data-lucide="play" class="w-5 h-5"></i>
-                    <span class="hidden md:inline">Run</span>
-                </button>
-                <button
-                    id="download-zip-btn"
-                    class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
-                    title="Download Project as ZIP"
-                    aria-label="Download project as a zip file"
-                >
-                    <i data-lucide="download" class="w-5 h-5"></i>
-                    <span class="hidden md:inline">Download</span>
-                </button>
-                <button
-                    id="layout-toggle-btn"
-                    class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
-                    title="Toggle Layout"
-                    aria-label="Toggle editor layout"
-                >
-                    <i data-lucide="rows-2" class="w-5 h-5"></i>
-                    <span class="hidden md:inline">Layout</span>
-                </button>
+                <svg class="w-4 md:w-8 h-4 md:h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                </svg>
+                <h1 id="app-header-title" class="md:text-lg lg:text-xl font-bold text-white">
+                    HTML Editor & Live Preview
+                </h1>
             </div>
-        </header>
+        </div>
+        <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2">
+                <label for="tab-size" class="text-xs lg:text-sm font-medium hidden md:inline">Tab Size:</label>
+                <select id="tab-size"
+                    class="bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="2">2</option>
+                    <option value="4" selected>4</option>
+                </select>
+            </div>
+            <button id="format-code-btn"
+                class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
+                title="Format Code" aria-label="Format code">
+                <i data-lucide="align-left" class="w-5 h-5"></i>
+                <span class="hidden md:inline">Format</span>
+            </button>
+            <button id="run-btn"
+                class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
+                title="Force Run (Ctrl+Enter)" aria-label="Run code">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                <span class="hidden md:inline">Run</span>
+            </button>
+            <button id="download-zip-btn"
+                class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
+                title="Download Project as ZIP" aria-label="Download project as a zip file">
+                <i data-lucide="download" class="w-5 h-5"></i>
+                <span class="hidden md:inline">Download</span>
+            </button>
+            <button id="layout-toggle-btn"
+                class="header-btn flex gap-2 items-center justify-center hover:bg-blue-600 border border-gray-600 rounded-md px-2 py-1"
+                title="Toggle Layout" aria-label="Toggle editor layout">
+                <i data-lucide="rows-2" class="w-5 h-5"></i>
+                <span class="hidden md:inline">Layout</span>
+            </button>
+        </div>
+    </header>
 
-        <!-- Main Content (Editor + Preview) -->
-        <!-- Visual Fix: Changed min-h-screen to min-h-0 to prevent overflow -->
-        <main class="flex flex-1 overflow-hidden min-h-0">
-            <!-- Editor Pane -->
-            <div id="editor-pane" class="flex flex-col bg-gray-900">
-                <!-- Editor Header -->
-                <div
-                    class="flex items-center justify-between h-8 px-2 bg-gray-800 border-b border-gray-500"
-                >
-                    <!-- Tabs -->
-                    <div
-                        id="editor-tabs"
-                        class="flex h-full text-xs sm:text-sm lg:text-base font-medium"
-                        role="tablist"
-                        aria-label="Code Editors"
-                    >
-                        <button
-                            data-editor="html"
-                            class="px-2 lg:px-3 xl:px-4 tab-btn active"
-                            role="tab"
-                            aria-selected="true"
-                            aria-controls="html-editor"
-                        >
-                            HTML
-                        </button>
-                        <button
-                            data-editor="css"
-                            class="px-2 lg:px-3 xl:px-4 tab-btn"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="css-editor"
-                        >
-                            CSS
-                        </button>
-                        <button
-                            data-editor="js"
-                            class="px-2 lg:px-3 xl:px-4 tab-btn"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="js-editor"
-                        >
-                            JavaScript
-                        </button>
-                        <button
-                            data-editor="console"
-                            class="px-2 lg:px-3 xl:px-4 tab-btn"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="console-panel"
-                        >
-                            Console
-                        </button>
-                    </div>
-                    <!-- Editor Controls -->
-                    <div class="flex items-center space-x-1 xl:space-x-2">
-                        <!-- Copy Button -->
-                        <button
-                            id="editor-copy-btn"
-                            class="control-btn"
-                            title="Copy Code"
-                            aria-label="Copy code from active editor"
-                        >
-                            <i data-lucide="copy" class="w-4 h-4"></i>
-                        </button>
-                        <!-- Clear Button -->
-                        <button
-                            id="editor-clear-btn"
-                            class="control-btn"
-                            title="Clear Code"
-                            aria-label="Clear code from active editor"
-                        >
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                        <!-- Toggle Theme Button -->
-                        <button
-                            id="editor-theme-btn"
-                            class="control-btn"
-                            title="Toggle Theme"
-                            aria-label="Toggle editor theme"
-                        >
-                            <i data-lucide="sun" class="w-4 h-4"></i>
-                        </button>
-                        <!-- Zoom Out Button -->
-                        <button
-                            id="editor-zoom-out-btn"
-                            class="control-btn"
-                            title="Zoom Out"
-                            aria-label="Zoom out editor text"
-                        >
-                            <i data-lucide="zoom-out" class="w-4 h-4"></i>
-                        </button>
-                        <!-- Zoom In Button -->
-                        <button
-                            id="editor-zoom-in-btn"
-                            class="control-btn"
-                            title="Zoom In"
-                            aria-label="Zoom in editor text"
-                        >
-                            <i data-lucide="zoom-in" class="w-4 h-4"></i>
-                        </button>
-                        <!-- Fullscreen Control Button -->
-                        <button
-                            id="editor-fullscreen-btn"
-                            class="control-btn"
-                            title="Toggle Editor Fullscreen"
-                            aria-label="Toggle editor fullscreen"
-                        >
-                            <i data-lucide="maximize" class="w-4 h-4"></i>
-                        </button>
-                    </div>
+    <!-- Main Content (Editor + Preview) -->
+    <main class="flex flex-1 overflow-hidden min-h-0">
+        <!-- Editor Pane -->
+        <div id="editor-pane" class="flex flex-col bg-gray-900">
+            <!-- Editor Header -->
+            <div class="flex items-center justify-between h-8 px-2 bg-gray-800 border-b border-gray-500">
+                <!-- Tabs -->
+                <div id="editor-tabs" class="flex h-full text-xs sm:text-sm lg:text-base font-medium" role="tablist"
+                    aria-label="Code Editors">
+                    <button data-editor="html" class="px-2 lg:px-3 xl:px-4 tab-btn active" role="tab"
+                        aria-selected="true" aria-controls="html-editor">
+                        HTML
+                    </button>
+                    <button data-editor="css" class="px-2 lg:px-3 xl:px-4 tab-btn" role="tab" aria-selected="false"
+                        aria-controls="css-editor">
+                        CSS
+                    </button>
+                    <button data-editor="js" class="px-2 lg:px-3 xl:px-4 tab-btn" role="tab" aria-selected="false"
+                        aria-controls="js-editor">
+                        JavaScript
+                    </button>
+                    <button data-editor="console" class="px-2 lg:px-3 xl:px-4 tab-btn" role="tab" aria-selected="false"
+                        aria-controls="console-panel">
+                        Console
+                    </button>
                 </div>
-                <!-- Editor Instances & Console -->
-                <div class="flex-1 relative h-full">
-                    <!-- HTML Editor -->
-                    <div
-                        id="html-editor"
-                        class="editor-instance absolute inset-0"
-                        role="tabpanel"
-                    ></div>
-                    <!-- CSS Editor -->
-                    <div
-                        id="css-editor"
-                        class="editor-instance absolute inset-0"
-                        style="visibility: hidden"
-                        role="tabpanel"
-                    ></div>
-                    <!-- JavaScript Editor -->
-                    <div
-                        id="js-editor"
-                        class="editor-instance absolute inset-0"
-                        style="visibility: hidden"
-                        role="tabpanel"
-                    ></div>
-                    <!-- Console Panel -->
-                    <div
-                        id="console-panel"
-                        class="editor-instance absolute inset-0 p-2 flex flex-col bg-gray-900 text-sm font-mono text-white"
-                        style="visibility: hidden"
-                        role="tabpanel"
-                    >
-                        <div
-                            class="flex justify-between items-center mb-2 flex-shrink-0"
-                        >
-                            <span class="text-xs text-gray-400"
-                                >Preview Console Logs</span
-                            >
-                            <button
-                                id="clear-console-btn"
-                                class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
-                            >
-                                Clear
-                            </button>
-                        </div>
-                        <div
-                            id="console-output"
-                            class="flex-1 overflow-y-auto"
-                            aria-live="polite"
-                        ></div>
+                <!-- Editor Controls -->
+                <div class="flex items-center space-x-1 xl:space-x-2">
+                    <!-- CSS Library Selection (Initially hidden) -->
+                    <div id="css-library-controls"
+                        class="hidden items-center space-x-1 border-r border-gray-700 pr-2 mr-1">
+                        <span class="text-[10px] text-gray-400 uppercase font-bold mr-1">CSS Lib:</span>
+                        <button data-lib="tailwind" class="lib-btn" title="Tailwind CSS">TW</button>
+                        <button data-lib="bootstrap" class="lib-btn" title="Bootstrap">BS</button>
+                        <button data-lib="mui" class="lib-btn" title="Material UI">MUI</button>
+                        <button data-lib="bulma" class="lib-btn" title="Bulma">BU</button>
+                        <button data-lib="none" class="lib-btn active" title="No Library">None</button>
                     </div>
+                    <!-- Copy Button -->
+                    <button id="editor-copy-btn" class="control-btn" title="Copy Code"
+                        aria-label="Copy code from active editor">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Clear Button -->
+                    <button id="editor-clear-btn" class="control-btn" title="Clear Code"
+                        aria-label="Clear code from active editor">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Toggle Theme Button -->
+                    <button id="editor-theme-btn" class="control-btn" title="Toggle Theme"
+                        aria-label="Toggle editor theme">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Zoom Out Button -->
+                    <button id="editor-zoom-out-btn" class="control-btn" title="Zoom Out"
+                        aria-label="Zoom out editor text">
+                        <i data-lucide="zoom-out" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Zoom In Button -->
+                    <button id="editor-zoom-in-btn" class="control-btn" title="Zoom In"
+                        aria-label="Zoom in editor text">
+                        <i data-lucide="zoom-in" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Fullscreen Control Button -->
+                    <button id="editor-fullscreen-btn" class="control-btn" title="Toggle Editor Fullscreen"
+                        aria-label="Toggle editor fullscreen">
+                        <i data-lucide="maximize" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
-
-            <!-- Resizer -->
-            <div
-                id="resizer"
-                class="bg-gray-700 hover:bg-blue-500 transition-colors duration-200"
-                title="Drag to resize panels"
-            ></div>
-
-            <!-- Preview Pane -->
-            <div id="preview-pane" class="flex flex-col h-full bg-white">
-                <!-- Preview Header -->
-                <div
-                    class="flex items-center justify-between h-8 px-2 bg-gray-800 border-b border-gray-500"
-                >
-                    <!-- Responsive Controls -->
-                    <div
-                        id="responsive-controls"
-                        class="flex items-center space-x-1 flex-wrap"
-                        aria-label="Responsive preview controls"
-                    >
-                        <button
-                            data-size="100%"
-                            class="responsive-btn p-1 rounded"
-                            title="Desktop"
-                            aria-label="Set preview to desktop size"
-                        >
-                            <i data-lucide="monitor" class="w-4 h-4"></i>
-                        </button>
-                        <button
-                            data-size="1280px"
-                            class="responsive-btn p-1 rounded"
-                            title="Large Desktop (1280px)"
-                            aria-label="Set preview to 1280 pixels wide"
-                        >
-                            <i data-lucide="laptop-2" class="w-4 h-4"></i>
-                        </button>
-                        <button
-                            data-size="1024px"
-                            class="responsive-btn p-1 rounded"
-                            title="Laptop (1024px)"
-                            aria-label="Set preview to 1024 pixels wide"
-                        >
-                            <i data-lucide="laptop" class="w-4 h-4"></i>
-                        </button>
-                        <button
-                            data-size="768px"
-                            class="responsive-btn p-1 rounded"
-                            title="Tablet (768px)"
-                            aria-label="Set preview to 768 pixels wide"
-                        >
-                            <i data-lucide="tablet" class="w-4 h-4"></i>
-                        </button>
-                        <button
-                            data-size="425px"
-                            class="responsive-btn p-1 rounded"
-                            title="Mobile L (425px)"
-                            aria-label="Set preview to 425 pixels wide"
-                        >
-                            <i data-lucide="smartphone" class="w-4 h-4"></i>
-                        </button>
-                        <button
-                            data-size="375px"
-                            class="responsive-btn p-1 rounded"
-                            title="Mobile M (375px)"
-                            aria-label="Set preview to 375 pixels wide"
-                        >
-                            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button
-                            data-size="320px"
-                            class="responsive-btn p-1 rounded"
-                            title="Mobile S (320px)"
-                            aria-label="Set preview to 320 pixels wide"
-                        >
-                            <i data-lucide="smartphone" class="w-3 h-3"></i>
-                        </button>
-                    </div>
-                    <!-- Preview Controls -->
-                    <div class="flex items-center">
-                        <button
-                            id="preview-fullscreen-btn"
-                            class="control-btn"
-                            title="Toggle Preview Fullscreen"
-                            aria-label="Toggle preview fullscreen"
-                        >
-                            <i data-lucide="maximize" class="w-4 h-4"></i>
-                        </button>
-                    </div>
+            <!-- Editor Instances & Console -->
+            <div class="flex-1 relative h-full">
+                <!-- HTML Editor -->
+                <div id="html-editor" class="editor-instance absolute inset-0" role="tabpanel"></div>
+                <!-- CSS Editor -->
+                <div id="css-editor" class="editor-instance absolute inset-0" style="visibility: hidden"
+                    role="tabpanel"></div>
+                <!-- JavaScript Editor -->
+                <div id="js-editor" class="editor-instance absolute inset-0" style="visibility: hidden" role="tabpanel">
                 </div>
-                <!-- Iframe for Preview -->
-                <div class="flex-1 bg-gray-100 p-1 bg-gray-800 overflow-auto">
-                    <iframe
-                        id="preview-iframe"
-                        class="w-full h-full bg-white border-0 shadow-lg mx-auto transition-all duration-300"
-                        sandbox="allow-scripts allow-same-origin"
-                        title="Live code preview"
-                    ></iframe>
+                <!-- Console Panel -->
+                <div id="console-panel"
+                    class="editor-instance absolute inset-0 p-2 flex flex-col bg-gray-900 text-sm font-mono text-white"
+                    style="visibility: hidden" role="tabpanel">
+                    <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                        <span class="text-xs text-gray-400">Preview Console Logs</span>
+                        <button id="clear-console-btn" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">
+                            Clear
+                        </button>
+                    </div>
+                    <div id="console-output" class="flex-1 overflow-y-auto" aria-live="polite"></div>
                 </div>
             </div>
-        </main>
-        <!-- Footer -->
-        <footer
-            id="app-footer"
-            class="bg-gray-900 border-t border-gray-800 py-0.5 text-center text-xs text-gray-400 z-20 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2"
-        >
-            <span>
-                Developed by
-                <a
-                    href="https://forhadakhan.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-gray-300 hover:text-white transition"
-                >
-                    Forhad Khan
-                </a>
-            </span>
-            <span class="hidden md:inline text-gray-600">✦</span>
-            <span>
-                <a
-                    href="https://github.com/forhadkhan/live-html-playground"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-gray-300 hover:text-white transition"
-                >
-                    Open-source on GitHub
-                </a>
-            </span>
-        </footer>
+        </div>
 
-        <!-- Scripts -->
-        <!-- SRI Security Fix: Changed 'xintegrity' to 'integrity' -->
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/ace.js"
-            xintegrity="sha512-4Cwg/K5Ie/i12kPteJChg4JqQecJ8fHra+h/Jqd5pTPf7h3aJ7j+X9e/Xy23dY1eCKEy+nJj3bQ5r7xXmI3cwA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        ></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-tomorrow_night_eighties.js"
-            xintegrity="sha512-P3L2tGnp/C/pr+h/2EVKk4uSoi/d513i43W2d/pGkAmZ+5tSdtYnDDh+zJbFAb3iTqgA/v4kP2k3v1jgB9dEwA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        ></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-chrome.js"
-            xintegrity="sha512-3f2i7rJ30d7RjbzGbpw2Nn5E20rXG6WqX2H55x0vYdi20c2b2sC5D/HsoX+e2kGWd/vB/aJTjPHR0crx4A9wQ=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        ></script>
-        <script
-            src="https://unpkg.com/prettier@2.8.4/standalone.js"
-            xintegrity="sha384-V3oSNpt338kE47Y18g1syw9rJ21f82F72m3fEZiDX8N++p+GFyFcJbS8d4eEno2b"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://unpkg.com/prettier@2.8.4/parser-html.js"
-            xintegrity="sha384-tZYzSjC9w7/gTfTdLn+D5s2NqLwV54/9/rE9e2Eup51/m+s+bI/vEdk20XpXGgSA"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://unpkg.com/prettier@2.8.4/parser-babel.js"
-            xintegrity="sha384-pL9U3y9PBTbE2MTVtPxii2lK1t2Tf0b4bMecD3bM8lZTf/2gXb+j2+wAZu2k/vjA"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://unpkg.com/prettier@2.8.4/parser-postcss.js"
-            xintegrity="sha384-aA/PAbf2p8iHdW8sB2Re+wJvLqj4+sU2lP1b2g/e9iH2p8oVwE3n/qY1oT2lU3o"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
-            xintegrity="sha512-XMVd28F1P5Tzoi1iJCiQifuyr7o4fI6iTM1Gw2EZMNEvgyIO0/+GeW2fkPAvQUILw32G4a4M838bPA+gWyf2nA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        ></script>
-        <script src="assets/js/config.js"></script>
-        <script src="assets/js/editor.js"></script>
-        <script src="assets/js/main.js"></script>
-    </body>
+        <!-- Resizer -->
+        <div id="resizer" class="bg-gray-700 hover:bg-blue-500 transition-colors duration-200"
+            title="Drag to resize panels"></div>
+
+        <!-- Preview Pane -->
+        <div id="preview-pane" class="flex flex-col h-full bg-white">
+            <!-- Preview Header -->
+            <div class="flex items-center justify-between h-8 px-2 bg-gray-800 border-b border-gray-500">
+                <!-- Responsive Controls -->
+                <div id="responsive-controls" class="flex items-center space-x-1 flex-wrap"
+                    aria-label="Responsive preview controls">
+                    <button data-size="100%" class="responsive-btn p-1 rounded" title="Desktop"
+                        aria-label="Set preview to desktop size">
+                        <i data-lucide="monitor" class="w-4 h-4"></i>
+                    </button>
+                    <button data-size="1280px" class="responsive-btn p-1 rounded" title="Large Desktop (1280px)"
+                        aria-label="Set preview to 1280 pixels wide">
+                        <i data-lucide="laptop-2" class="w-4 h-4"></i>
+                    </button>
+                    <button data-size="1024px" class="responsive-btn p-1 rounded" title="Laptop (1024px)"
+                        aria-label="Set preview to 1024 pixels wide">
+                        <i data-lucide="laptop" class="w-4 h-4"></i>
+                    </button>
+                    <button data-size="768px" class="responsive-btn p-1 rounded" title="Tablet (768px)"
+                        aria-label="Set preview to 768 pixels wide">
+                        <i data-lucide="tablet" class="w-4 h-4"></i>
+                    </button>
+                    <button data-size="425px" class="responsive-btn p-1 rounded" title="Mobile L (425px)"
+                        aria-label="Set preview to 425 pixels wide">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    </button>
+                    <button data-size="375px" class="responsive-btn p-1 rounded" title="Mobile M (375px)"
+                        aria-label="Set preview to 375 pixels wide">
+                        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button data-size="320px" class="responsive-btn p-1 rounded" title="Mobile S (320px)"
+                        aria-label="Set preview to 320 pixels wide">
+                        <i data-lucide="smartphone" class="w-3 h-3"></i>
+                    </button>
+                </div>
+                <!-- Preview Controls -->
+                <div class="flex items-center">
+                    <button id="preview-fullscreen-btn" class="control-btn" title="Toggle Preview Fullscreen"
+                        aria-label="Toggle preview fullscreen">
+                        <i data-lucide="maximize" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Iframe for Preview -->
+            <div class="flex-1 bg-gray-100 p-1 bg-gray-800 overflow-auto">
+                <iframe id="preview-iframe"
+                    class="w-full h-full bg-white border-0 shadow-lg mx-auto transition-all duration-300"
+                    sandbox="allow-scripts allow-same-origin" title="Live code preview"></iframe>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer id="app-footer"
+        class="bg-gray-900 border-t border-gray-800 py-0.5 text-center text-xs text-gray-400 z-20 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2">
+        <span>
+            Developed by
+            <a href="https://forhadkhan.com" target="_blank" rel="noopener noreferrer"
+                class="text-gray-300 hover:text-white transition">
+                Forhad Khan
+            </a>
+        </span>
+        <span class="hidden md:inline text-gray-600">✦</span>
+        <span>
+            <a href="https://github.com/forhadkhan/live-html-playground" target="_blank" rel="noopener noreferrer"
+                class="text-gray-300 hover:text-white transition">
+                View the source on GitHub
+            </a>
+        </span>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- SRI Security Fix: Changed 'xintegrity' to 'integrity' -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/ace.js"
+        xintegrity="sha512-4Cwg/K5Ie/i12kPteJChg4JqQecJ8fHra+h/Jqd5pTPf7h3aJ7j+X9e/Xy23dY1eCKEy+nJj3bQ5r7xXmI3cwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-tomorrow_night_eighties.js"
+        xintegrity="sha512-P3L2tGnp/C/pr+h/2EVKk4uSoi/d513i43W2d/pGkAmZ+5tSdtYnDDh+zJbFAb3iTqgA/v4kP2k3v1jgB9dEwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.33.0/theme-chrome.js"
+        xintegrity="sha512-3f2i7rJ30d7RjbzGbpw2Nn5E20rXG6WqX2H55x0vYdi20c2b2sC5D/HsoX+e2kGWd/vB/aJTjPHR0crx4A9wQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/standalone.js"
+        xintegrity="sha384-V3oSNpt338kE47Y18g1syw9rJ21f82F72m3fEZiDX8N++p+GFyFcJbS8d4eEno2b"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-html.js"
+        xintegrity="sha384-tZYzSjC9w7/gTfTdLn+D5s2NqLwV54/9/rE9e2Eup51/m+s+bI/vEdk20XpXGgSA"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-babel.js"
+        xintegrity="sha384-pL9U3y9PBTbE2MTVtPxii2lK1t2Tf0b4bMecD3bM8lZTf/2gXb+j2+wAZu2k/vjA"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/prettier@2.8.4/parser-postcss.js"
+        xintegrity="sha384-aA/PAbf2p8iHdW8sB2Re+wJvLqj4+sU2lP1b2g/e9iH2p8oVwE3n/qY1oT2lU3o"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        xintegrity="sha512-XMVd28F1P5Tzoi1iJCiQifuyr7o4fI6iTM1Gw2EZMNEvgyIO0/+GeW2fkPAvQUILw32G4a4M838bPA+gWyf2nA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/editor.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
 </html>

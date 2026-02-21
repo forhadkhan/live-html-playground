@@ -4,7 +4,9 @@
 
 <!-- PROJECT LOGO -->
 <p align="center">
-    <img align="center" src="assets/img/livemarkup.png" alt="LiveMarkup Logo" title="LiveMarkup" class="h-10 w-auto">
+    <a href="https://livemarkup.js.org">
+        <img align="center" src="assets/img/livemarkup.png" alt="LiveMarkup Logo" title="LiveMarkup" class="h-10 w-auto">
+    </a>
 </p>
 
 <!-- PROJECT BADGES -->
@@ -15,7 +17,7 @@
 
 **LiveMarkup** is a fast, browser-based playground for frontend developers. Write **HTML**, **CSS**, and **JS** with instant live previews and one-click integration for popular CSS frameworks like **Tailwind CSS**, **Bootstrap**, **MUI** and **Bulma**.
 
-Built entirely with pure **JavaScript**, this live editor runs fully in the browser - no backend required. It’s perfect for quick prototyping, learning, or checking web snippets.
+Built entirely with pure **JavaScript**, this live editor runs fully in the browser - no backend required. It’s **perfect for quick prototyping, learning, or checking web snippets**.
 
 
 ## **Key Features**

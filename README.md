@@ -1,13 +1,9 @@
-<h1 style="text-align: center;">
-<svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-</svg>
-    LiveMarkup
+<h1 align="center">
+    <img src="assets/img/livemarkup.png" alt="LiveMarkup Logo" title="LiveMarkup" class="h-10 w-auto">
+    <span style="display: none">LiveMarkup</span>
 </h1>
-<p style="text-align: center;">
-<a href="https://livemarkup.web.app">Live Demo</a> | <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
+<p align="center">
+<a href="https://forhadkhan.github.io/livemarkup/">Live Demo</a> ✦ <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
 </p>
 
 ---

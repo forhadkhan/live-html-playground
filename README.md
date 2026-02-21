@@ -1,94 +1,96 @@
-# **Live HTML Editor & Previewer**
-
-A powerful, client-side web development tool that provides real-time previews for your HTML, CSS, and JavaScript code.
-Built entirely with pure JavaScript, this live editor runs fully in the browser — no backend required.
-It’s perfect for quick prototyping, learning, or quick checking web snippets, and can be hosted easily on any static hosting platform such as GitHub Pages.
+<h1 style="text-align: center;">
+<svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+</svg>
+    LiveMarkup
+</h1>
+<p style="text-align: center;">
+<a href="https://livemarkup.web.app">Live Demo</a> | <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
+</p>
 
 ---
 
-## **Features**
+**LiveMarkup** is a fast, browser-based playground for frontend developers. Write HTML, CSS, and JS with instant live previews and one-click integration for popular CSS frameworks like Tailwind CSS, Bootstrap, MUI and Bulma.
 
-Packed with features to offer a smooth, professional, and modern development experience:
+Built entirely with pure JavaScript, this live editor runs fully in the browser — no backend required. It’s perfect for quick prototyping, learning, or checking web snippets.
 
-* **Tri-Panel Code Editor:** Separate, tabbed editors for HTML, CSS, and JavaScript, powered by **ACE Editor** for syntax highlighting, autocompletion, and themes.
-* **Session Persistence:** Your code and preferences (theme, layout, font size, etc.) are automatically saved in your browser. Never lose your work on a refresh!
-* **Real-Time Preview:** Instantly see your code come to life in the preview pane. Updates automatically as you type (with debounce) or manually using the **Run** button.
-* **Console Output:** View JavaScript logs and errors directly within the built-in console panel.
-* **Code Formatting:** Integrated **Prettier** for one-click code beautification of HTML, CSS, and JavaScript.
-* **Theme Toggle:** Switch seamlessly between **dark (Tomorrow Night)** and **light (Chrome)** editor themes.
-* **Zoom Controls:** Adjust font size easily with zoom-in and zoom-out controls for better readability.
-* **Draggable Resizer:** Resize the editor and preview panes dynamically using the vertical resizer.
-* **Adaptive Layout:**
+---
 
-  * On large screens, the editor and preview appear side-by-side.
-  * On smaller screens, they stack vertically.
-  * A **layout toggle** in the header lets you switch views manually at any time.
-* **Responsive Design Testing:** Preview your project across multiple device sizes — from mobile to desktop — using the responsive control panel.
-* **Immersive Fullscreen Modes:**
+## **Key Features**
 
-  * **Editor Fullscreen:** Focus solely on your code.
-  * **Preview Fullscreen:** View your project distraction-free.
-* **Editor Configuration:** Customize tab width (2 or 4 spaces) to match your coding style.
-* **Enhanced Accessibility:** Built with keyboard navigation in mind, featuring custom high-visibility focus styles and an Esc key command to easily move focus out of the code editor.
-* **Secure by Design:** Utilizes Subresource Integrity (SRI) on all third-party scripts to protect against potential CDN-based attacks.
-* **Export as ZIP:** Download your full project (HTML, CSS, and JS) bundled neatly into a single `.zip` file.
+#### 🛠️ **Professional Editor**
+* **Tri-Panel Setup:** Separate editors for HTML, CSS, and JavaScript.
+* **Code Formatting:** One-click beautification powered by **Prettier**.
+* **Zoom & Themes:** Adjust font size and switch between **Dark** and **Light** modes.
+* **ACE Editor:** Syntax highlighting, autocompletion, and themes.
+* **Accessibility:** Enhanced keyboard navigation and high-visibility focus.
+
+#### 📺 **Interactive Preview**
+* **Real-time Updates:** See changes instantly as you type (with smart debounce).
+* **Responsive Testing:** Built-in device presets (Mobile, Tablet, Desktop) to test layouts.
+* **Console Panel:** Integrated log viewer for JavaScript debugging.
+* **Fullscreen Modes:** Focused coding or distraction-free previewing.
+
+#### 📦 **Integration & Export**
+* **One-Click Frameworks:** Instant injection of **Tailwind CSS**, **Bootstrap**, **MUI**, or **Bulma**.
+* **Zero Configuration:** No build tools or servers needed.
+* **Export to ZIP:** Download your project as a clean, production-ready bundle.
+
+#### ⚡ **Performance & UX**
+* **Session Persistence:** State is automatically saved in your browser's `localStorage`.
+* **Flexible Layout:** Responsive UI with draggable resizers and layout toggles.
+* **Security First:** Subresource Integrity (SRI) for all external dependencies.
+* **Ultra-Lightweight:** Fast, minimal footprint, and hostable anywhere.
 
 ---
 
 ## **Tech Stack**
 
-Built for speed, simplicity, and portability using modern client-side technologies:
-
 * **Core:** HTML5, CSS3, JavaScript (ES6+)
-* **Styling:** Tailwind CSS (via CDN) — utility-first and lightweight
-* **Code Editor:** ACE Editor — for syntax highlighting, themes, and autocompletion
-* **Formatter:** Prettier — for consistent and clean code formatting
-* **File Packaging:** JSZip — for in-browser ZIP creation
-* **Icons:** Lucide Icons — sleek and modern SVG icon set
-* **Persistence:** Browser localStorage API
-
----
-
-## **How to Use**
-
-1. **Clone** the repository or **download** the files.
-2. **Open** `index.html` directly in your web browser — no build or server setup required.
-3. **Start coding:**
-
-   * Write markup in the **HTML** tab.
-   * Add styles in the **CSS** tab.
-   * Implement logic in the **JavaScript** tab.
-4. **Preview:** See live updates as you type or click **Run** to refresh manually.
-5. **Use the Controls:**
-
-   * **Format** your code with one click.
-   * **Test responsiveness** across devices.
-   * **Toggle fullscreen** or **switch themes** as needed.
-   * **Download** your complete project as a ZIP file.
+* **Styling:** Tailwind CSS (via CDN)
+* **Code Editor:** ACE Editor
+* **Formatter:** Prettier
+* **File Packaging:** JSZip
+* **Icons:** Lucide Icons
+* **Persistence:** browser `localStorage` API
 
 ---
 
 ## **Project Structure**
 
-A simple and organized structure for easy navigation:
-
 ```.txt
-.
-├── index.html              # Main entry point (UI layout)
-├── README.md               # Project documentation (you are here)
+livemarkup/
+├── index.html              # Main UI and layout
+├── README.md               # Documentation
+├── terms.html              # Terms of Use
+├── LICENSE                 # MIT License
 └── assets/
     ├── css/
-    │   └── style.css       # Custom styles for layout and UI
-    ├── img/                # Images and icons
+    │   └── style.css       # Core UI styles
+    ├── img/                # Visual assets
     └── js/
-        ├── config.js       # App configuration and metadata
-        ├── editor.js       # ACE editor setup and event handling
-        └── main.js         # Core logic and feature implementation
+        ├── config.js       # App configuration
+        ├── editor.js       # Editor setup
+        └── main.js         # Application logic
 ```
+
+---
+
+## **Contributing**
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to report bugs, suggest features, or get started with development.
+
+---
+
+## **License & Terms**
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+By using this tool, you agree to our [Terms of Use](terms.html).
 
 ---
 
 ## **Author**
 
-**[Forhad Khan](https://forhadkhan.com)**
-GitHub: [@forhadkhan](https://github.com/forhadkhan)
+**[Forhad Khan](https://forhadkhan.com)** | [@forhadkhan](https://github.com/forhadkhan)

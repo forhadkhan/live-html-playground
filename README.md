@@ -1,9 +1,15 @@
-<h1 align="center">
-    <img src="assets/img/livemarkup.png" alt="LiveMarkup Logo" title="LiveMarkup" class="h-10 w-auto">
-    <span style="display: none">LiveMarkup</span>
-</h1>
+<!-- 
+# LiveMarkup
+-->
+
+<!-- PROJECT LOGO -->
 <p align="center">
-<a href="https://forhadkhan.github.io/livemarkup/">Live Demo</a> ✦ <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
+    <img align="center" src="assets/img/livemarkup.png" alt="LiveMarkup Logo" title="LiveMarkup" class="h-10 w-auto">
+</p>
+
+<!-- PROJECT BADGES -->
+<p align="center">
+    <a href="https://forhadkhan.github.io/livemarkup/">Live Demo</a> ✦ <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
 </p>
 
 ---

@@ -9,16 +9,14 @@
 
 <!-- PROJECT BADGES -->
 <p align="center">
-    <a href="https://forhadkhan.github.io/livemarkup/">Live Demo</a> ✦ <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
+    <a href="https://livemarkup.js.org">Live Demo</a> ✦ <a href="https://github.com/forhadkhan/livemarkup/issues">Report Bug</a>
 </p>
 
----
 
-**LiveMarkup** is a fast, browser-based playground for frontend developers. Write HTML, CSS, and JS with instant live previews and one-click integration for popular CSS frameworks like Tailwind CSS, Bootstrap, MUI and Bulma.
+**LiveMarkup** is a fast, browser-based playground for frontend developers. Write **HTML**, **CSS**, and **JS** with instant live previews and one-click integration for popular CSS frameworks like **Tailwind CSS**, **Bootstrap**, **MUI** and **Bulma**.
 
-Built entirely with pure JavaScript, this live editor runs fully in the browser — no backend required. It’s perfect for quick prototyping, learning, or checking web snippets.
+Built entirely with pure **JavaScript**, this live editor runs fully in the browser - no backend required. It’s perfect for quick prototyping, learning, or checking web snippets.
 
----
 
 ## **Key Features**
 
@@ -46,7 +44,6 @@ Built entirely with pure JavaScript, this live editor runs fully in the browser 
 * **Security First:** Subresource Integrity (SRI) for all external dependencies.
 * **Ultra-Lightweight:** Fast, minimal footprint, and hostable anywhere.
 
----
 
 ## **Tech Stack**
 
@@ -58,7 +55,6 @@ Built entirely with pure JavaScript, this live editor runs fully in the browser 
 * **Icons:** Lucide Icons
 * **Persistence:** browser `localStorage` API
 
----
 
 ## **Project Structure**
 
@@ -78,21 +74,21 @@ livemarkup/
         └── main.js         # Application logic
 ```
 
----
+
 
 ## **Contributing**
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to report bugs, suggest features, or get started with development.
 
----
+
 
 ## **License & Terms**
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-By using this tool, you agree to our [Terms of Use](terms.html).
+By using this tool, you agree to our [Terms of Use](https://livemarkup.js.org/terms.html).
 
----
 
 ## **Author**
-
-**[Forhad Khan](https://forhadkhan.com)** | [@forhadkhan](https://github.com/forhadkhan)
+<p align="center">
+    <a href="https://forhadkhan.com" target="_blank" rel="noopener noreferrer">Forhad Khan</a> ✦ <a href="https://github.com/forhadkhan" target="_blank" rel="noopener noreferrer">@forhadkhan</a>
+</p>
